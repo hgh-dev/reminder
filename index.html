@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Reminder v5.5.2</title> 
-    
+
+    <title>Reminder v5.5.2</title>
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -19,1028 +22,1947 @@
 
     <style>
         /* 기본 설정 */
-        html { font-size: 15px; }
-        body { 
-            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; 
-            background-color: #ffffff; 
-            margin: 0; padding: 0; color: #111; 
+        html {
+            font-size: 15px;
         }
 
-        .container { 
-            width: 100%; max-width: 945px; margin: 0 auto; 
-            background: white; min-height: 100vh; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.05); 
-            position: relative; overflow-x: hidden; 
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            color: #111;
         }
-        
+
+        .container {
+            width: 100%;
+            max-width: 945px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow-x: hidden;
+        }
+
         /* 헤더 스타일 */
-        header { 
-            background-color: #000000; color: white; padding: 10px 15px; 
-            text-align: center; position: sticky; top: 0; z-index: 50; 
-            display: flex; justify-content: space-between; align-items: center;
-            height: 60px; box-sizing: border-box; 
+        header {
+            background-color: #000000;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            box-sizing: border-box;
         }
-        header h1 { 
-            margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; 
-            position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+
+        header h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            pointer-events: none;
         }
 
         /* 왼쪽 대시보드 버튼 */
         .header-left-btn {
-            background: #333; border: 1px solid #555; color: white; cursor: pointer; 
-            font-size: 0.9rem; padding: 6px 12px; display: flex; align-items: center; gap: 8px;
-            transition: 0.2s; border-radius: 20px; font-weight: normal; font-family: inherit;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            border-radius: 20px;
+            font-weight: normal;
+            font-family: inherit;
         }
-        .header-left-btn:hover { background-color: #555; }
-        
-        .dashboard-icon { width: 18px; height: 18px; fill: currentColor; }
+
+        .header-left-btn:hover {
+            background-color: #555;
+        }
+
+        .dashboard-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
 
         /* 오른쪽 프로필 영역 */
-        .profile-container { position: relative; }
+        .profile-container {
+            position: relative;
+        }
 
         .profile-avatar-btn {
-            width: 36px; height: 36px; border-radius: 50%; 
-            background-color: #ef5350; 
-            color: white; border: 2px solid #333; 
-            font-weight: bold; font-size: 1rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #7e57c2;
+            color: white;
+            border: none;
+            font-weight: 400;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto', sans-serif;
+            transition: 0.2s;
         }
-        .profile-avatar-btn:hover { border-color: #fff; }
+
+        .profile-avatar-btn:hover {
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+        }
+
 
         /* 구글 스타일 드롭다운 팝업 */
         .profile-dropdown {
-            display: none; 
-            position: absolute; 
-            top: 50px; right: -10px; 
-            width: 320px; 
-            background-color: #e9eef6; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            border-radius: 28px; 
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: -10px;
+            width: 320px;
+            background-color: #e9eef6;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 28px;
             padding: 10px;
             text-align: center;
             z-index: 100;
             color: #333;
-            cursor: default; 
+            cursor: default;
         }
-        .profile-dropdown.show { display: block; animation: popIn 0.2s ease-out; }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        .pop-header { position: relative; padding: 10px; padding-bottom: 5px; }
-        .pop-close-btn { position: absolute; top: 5px; right: 10px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #555; }
-        .pop-email { font-size: 0.85rem; color: #444; margin-bottom: 15px; font-weight: 500;}
-        
-        .pop-big-avatar { 
-            width: 70px; height: 70px; background: #ef5350; color: white; 
-            border-radius: 50%; font-size: 2rem; font-weight: bold; 
-            display: flex; justify-content: center; align-items: center; 
-            margin: 0 auto 10px auto; 
-            position: relative;
+        .profile-dropdown.show {
+            display: block;
+            animation: popIn 0.2s ease-out;
         }
-        /* [수정됨 v5.5.2] 버튼이 사라졌으므로 아래쪽 여백(margin-bottom)을 넉넉하게 조정 (15px -> 25px) */
-        .pop-greeting { font-size: 1.1rem; color: #202124; margin-bottom: 25px; font-weight: 400; }
-        
-        /* [삭제됨 v5.5.2] .pop-manage-btn 관련 스타일 삭제 */
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .pop-header {
+            position: relative;
+            padding: 20px 10px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pop-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #5f6368;
+            line-height: 1;
+            padding: 5px;
+        }
+
+        .pop-big-avatar {
+            width: 80px;
+            height: 80px;
+            background: #7e57c2;
+            color: white;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            font-weight: 400;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .pop-name {
+            font-size: 1.1rem;
+            color: #202124;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .pop-email {
+            font-size: 0.85rem;
+            color: #5f6368;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
 
         .pop-menu-list {
-            background: white; border-radius: 20px; overflow: hidden;
-            display: flex; flex-direction: column;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
         }
+
         .pop-menu-item {
-            background: white; border: none; width: 100%; text-align: left;
-            padding: 15px 20px; font-size: 0.9rem; color: #3c4043;
-            cursor: pointer; border-bottom: 1px solid #f1f3f4;
-            display: flex; align-items: center; gap: 15px; 
+            background: white;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            color: #3c4043;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+            display: flex;
+            align-items: center;
+            gap: 15px;
             font-family: inherit;
+            font-weight: 500;
         }
-        .pop-menu-item:last-child { border-bottom: none; }
-        .pop-menu-item:hover { background-color: #f5f5f5; }
-        
-        .pop-svg { 
-            width: 20px; height: 20px; 
-            fill: #5f6368; 
+
+        .pop-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .pop-menu-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pop-svg {
+            width: 20px;
+            height: 20px;
+            fill: #5f6368;
         }
 
 
         /* 기존 버튼 스타일 */
-        .back-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 5px; z-index: 20;}
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 20;
+        }
 
         /* 필터 바 */
-        .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 15px 20px; background: white; border-bottom: 1px solid #f5f5f5; }
-        .filter-btn { white-space: nowrap; padding: 6px 12px; border-radius: 5px; border: 1px solid #f0f0f0; background: #fff; color: #555; font-size: 0.9rem; font-weight: 350; cursor: pointer; transition: 0.2s; font-family: inherit; }
-        .filter-btn.active { background: #000; color: #fff; border-color: #000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-weight: bold; }
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .filter-btn {
+            white-space: nowrap;
+            padding: 6px 12px;
+            border-radius: 5px;
+            border: 1px solid #f0f0f0;
+            background: #fff;
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 350;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .filter-btn.active {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+        }
 
         /* 리스트 컨트롤 영역 */
-        .list-controls { 
-            padding: 10px 20px 0 20px; 
-            background: white; 
-            display: flex; 
+        .list-controls {
+            padding: 10px 20px 0 20px;
+            background: white;
+            display: flex;
             justify-content: flex-end;
             align-items: center;
         }
-        
-        .control-btn { 
-            background: none; 
-            border: 1px solid #ddd; 
-            padding: 6px 14px; 
-            font-size: 0.85rem; 
-            border-radius: 15px; 
-            color: #666; 
-            cursor: pointer; 
-            transition: 0.2s; 
+
+        .control-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 15px;
+            color: #666;
+            cursor: pointer;
+            transition: 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center; 
-            gap: 6px; 
-            min-width: 110px; 
+            justify-content: center;
+            gap: 6px;
+            min-width: 110px;
         }
-        .control-btn:hover { background: #f5f5f5; color: #000; border-color: #bbb; }
-        .control-btn.active { background: #000; color: #fff; border-color: #000; }
 
-        .btn-icon { width: 16px; height: 16px; fill: currentColor; }
+        .control-btn:hover {
+            background: #f5f5f5;
+            color: #000;
+            border-color: #bbb;
+        }
+
+        .control-btn.active {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
 
         /* 로그인, 로딩 화면 */
-        #login-screen { text-align: center; padding: 50px 20px; }
-        .login-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .google-btn { background: #000; color: white; border: none; padding: 12px 20px; border-radius: 5px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 20px;}
-        
-        #loading-screen { position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index: 999; display: flex; justify-content: center; align-items: center; flex-direction: column;}
-        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #000; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #login-screen {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         /* 탭 바 */
-        .tab-bar { display: flex; background: #fff; border-bottom: 1px solid #eee; }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: white; cursor: pointer; font-weight: bold; color: #aaa; border-bottom: 2px solid transparent; transition: 0.3s; }
-        .tab-btn.active { color: #000; border-bottom: 2px solid #000; }
-        
-        .list-container { padding: 20px; padding-bottom: 90px; }
+        .tab-bar {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            color: #aaa;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #000;
+            border-bottom: 2px solid #000;
+        }
+
+        .list-container {
+            padding: 20px;
+            padding-bottom: 90px;
+        }
 
         /* 카드 스타일 */
-        .card { 
-            background: white; border: 1px solid #eee; border-radius: 12px; padding: 20px; padding-top: 30px; padding-bottom: 45px; margin-bottom: 15px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; transition: 0.3s; 
-            display: flex; justify-content: space-between; align-items: center; position: relative; 
+        .card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            padding-top: 30px;
+            padding-bottom: 45px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
         }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.06); }
-        .card.sortable-ghost { opacity: 0.4; background: #f0f0f0; border: 2px dashed #ccc; }
-        .container.editing-mode .card { margin-right: 40px; }
 
-        .drag-handle { position: absolute; right: -40px; top: 0; bottom: 0; width: 40px; display: none; justify-content: center; align-items: center; cursor: grab; color: #bbb; font-size: 1.5rem; }
-        .drag-handle:hover { color: #333; }
-        .container.editing-mode .drag-handle { display: flex; }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+        }
 
-        .card.completed { background-color: #f9f9f9; border-color: #eee; opacity: 0.8; }
-        .completed-badge { position: absolute; top: 0; right: 0; background: #ef5350; color: white; font-size: 0.7rem; font-weight: bold; padding: 4px 12px; border-radius: 0 12px 0 10px; z-index: 5; box-shadow: -1px 1px 3px rgba(0,0,0,0.1); }
+        .card.sortable-ghost {
+            opacity: 0.4;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+        }
 
-        .card-title { font-weight: 700; font-size: 1.1rem; color: #000; }
-        .card.completed .card-title { color: #888; text-decoration: line-through; }
+        .container.editing-mode .card {
+            margin-right: 40px;
+        }
 
-        .category-badge { position: absolute; top: 0; left: 0; z-index: 5; font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 12px 0 10px 0; color: white; background-color: #000; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); letter-spacing: 0.5px; }
+        .drag-handle {
+            position: absolute;
+            right: -40px;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            color: #bbb;
+            font-size: 1.5rem;
+        }
 
-        .goal-date { position: absolute; bottom: 12px; right: 20px; font-size: 0.75rem; color: #999; font-weight: 400; }
-        .card.completed .goal-date { color: #ef5350; font-weight: bold; }
-        
-        .total-time-badge { position: absolute; bottom: 12px; left: 20px; font-size: 0.8rem; color: #1976d2; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .drag-handle:hover {
+            color: #333;
+        }
 
-        .icon-btn { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; transition: background-color 0.2s; color: #bbb; }
-        .icon-btn:hover { background-color: #f0f0f0; color: #000; }
-        .icon-svg { width: 20px; height: 20px; fill: currentColor; }
+        .container.editing-mode .drag-handle {
+            display: flex;
+        }
 
-        .card-actions { display: flex; gap: 2px; }
+        .card.completed {
+            background-color: #f9f9f9;
+            border-color: #eee;
+            opacity: 0.8;
+        }
+
+        .completed-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef5350;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 0 12px 0 10px;
+            z-index: 5;
+            box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #000;
+        }
+
+        .card.completed .card-title {
+            color: #888;
+            text-decoration: line-through;
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 12px 0 10px 0;
+            color: white;
+            background-color: #000;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .goal-date {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            font-size: 0.75rem;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .card.completed .goal-date {
+            color: #ef5350;
+            font-weight: bold;
+        }
+
+        .total-time-badge {
+            position: absolute;
+            bottom: 12px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #1976d2;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            color: #bbb;
+        }
+
+        .icon-btn:hover {
+            background-color: #f0f0f0;
+            color: #000;
+        }
+
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 2px;
+        }
 
         /* 기록 카드 스타일 */
-        .record-card { padding: 18px; margin-bottom: 12px; border-radius: 12px; border-left: 4px solid #ddd; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .style-smile { border-left-color: #2e7d32; }   
-        .style-neutral { border-left-color: #f9a825; } 
-        .style-sad { border-left-color: #c62828; }     
+        .record-card {
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border-left: 4px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
 
-        .record-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #888; font-size: 0.85rem; font-weight: normal; }
-        .record-time-badge { display: inline-block; background: #e3f2fd; color: #1565c0; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px; vertical-align: middle; }
+        .style-smile {
+            border-left-color: #2e7d32;
+        }
 
-        .record-content { display: flex; align-items: flex-start; }
-        .emoji-display { font-size: 1.8rem; margin-right: 15px; line-height: 1.2; }
-        .record-text { font-size: 1rem; color: #333; line-height: 1.4; flex: 1; white-space: pre-wrap; }
-        
-        .subgoal-tags { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #f0f0f0; display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
-        .subgoal-tag { background: #f5f5f5; color: #555; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: normal; border: 1px solid #eee; }
+        .style-neutral {
+            border-left-color: #f9a825;
+        }
+
+        .style-sad {
+            border-left-color: #c62828;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+
+        .record-time-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1565c0;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .record-content {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .emoji-display {
+            font-size: 1.8rem;
+            margin-right: 15px;
+            line-height: 1.2;
+        }
+
+        .record-text {
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.4;
+            flex: 1;
+            white-space: pre-wrap;
+        }
+
+        .subgoal-tags {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #f0f0f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .subgoal-tag {
+            background: #f5f5f5;
+            color: #555;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: normal;
+            border: 1px solid #eee;
+        }
 
         /* FAB 버튼 */
-        .fab-btn { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background-color: #000; color: white; border: none; border-radius: 50px; padding: 16px 32px; font-size: 1rem; font-weight: bold; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); cursor: pointer; width: max-content; transition: 0.2s; z-index: 50;}
-        .fab-btn:hover { background-color: #333; transform: translateX(-50%) scale(1.05); }
-        
+        .fab-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            width: max-content;
+            transition: 0.2s;
+            z-index: 50;
+        }
+
+        .fab-btn:hover {
+            background-color: #333;
+            transform: translateX(-50%) scale(1.05);
+        }
+
         /* 모달 스타일 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: white; padding: 30px; border-radius: 0; width: 85%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;}
-        
-        .modal select { width: 100%; padding: 12px; margin: 10px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 0; font-family: inherit; background: white; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; }
-        .modal input[type="text"], .modal input[type="date"], .modal input[type="number"], .modal textarea { width: 100%; padding: 12px; margin: 10px 0 10px 0; box-sizing: border-box; border: 1px solid #ddd; border-radius: 0; font-family: inherit; }
-        .modal input:focus, .modal textarea:focus, .modal select:focus { outline: none; border-color: #000; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0;
+            width: 85%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 0;
+            font-family: inherit;
+            background: white;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        .modal input[type="text"],
+        .modal input[type="date"],
+        .modal input[type="number"],
+        .modal textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 0;
+            font-family: inherit;
+        }
+
+        .modal input:focus,
+        .modal textarea:focus,
+        .modal select:focus {
+            outline: none;
+            border-color: #000;
+        }
 
         /* 하위 목표 UI */
-        .subgoal-input-group { display: flex; gap: 5px; margin-bottom: 10px; }
-        .subgoal-input-group input { margin: 0 !important; }
-        .btn-add-sub { background: #000; color: white; border: none; border-radius: 0; padding: 0 15px; cursor: pointer; font-weight: bold; font-size: 1.2rem;}
-        
-        .subgoal-list-ui { list-style: none; padding: 0; margin: 0 0 20px 0; }
-        .subgoal-item-ui { display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom:1px solid #eee; padding: 8px 5px; margin-bottom: 0; font-size: 0.9rem; cursor: move; } 
-        .subgoal-item-ui.sortable-ghost { background: #f9f9f9; opacity: 0.5; }
-        .subgoal-drag-handle { margin-right: 10px; color: #ccc; cursor: grab; }
-        .subgoal-edit-name { flex: 1; margin: 0 !important; padding: 8px !important; border: 1px solid transparent !important; border-radius: 4px; background: transparent; }
-        .subgoal-edit-name:focus { border-color: #ddd !important; background: #f9f9f9; }
-        .subgoal-item-ui button { background: none; border: none; color: #999; cursor: pointer; font-weight: bold; padding: 0 10px; }
-        .subgoal-item-ui button:hover { color: #000; }
-        
+        .subgoal-input-group {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .subgoal-input-group input {
+            margin: 0 !important;
+        }
+
+        .btn-add-sub {
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 0;
+            padding: 0 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .subgoal-list-ui {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .subgoal-item-ui {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 8px 5px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            cursor: move;
+        }
+
+        .subgoal-item-ui.sortable-ghost {
+            background: #f9f9f9;
+            opacity: 0.5;
+        }
+
+        .subgoal-drag-handle {
+            margin-right: 10px;
+            color: #ccc;
+            cursor: grab;
+        }
+
+        .subgoal-edit-name {
+            flex: 1;
+            margin: 0 !important;
+            padding: 8px !important;
+            border: 1px solid transparent !important;
+            border-radius: 4px;
+            background: transparent;
+        }
+
+        .subgoal-edit-name:focus {
+            border-color: #ddd !important;
+            background: #f9f9f9;
+        }
+
+        .subgoal-item-ui button {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 10px;
+        }
+
+        .subgoal-item-ui button:hover {
+            color: #000;
+        }
+
         /* 토글 등 설정 UI */
-        .complete-toggle-area { margin-top: 20px; padding: 15px; background: #fafafa; border: 1px solid #eee; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: space-between; }
-        .complete-toggle-area.open { border-bottom: none; border-radius: 8px 8px 0 0; }
-        .complete-toggle-area:not(.open) { border-radius: 8px; }
+        .complete-toggle-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-        .setting-toggle-area { margin-top: 10px; padding: 15px; background: #fff; border: 1px solid #eee; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .complete-toggle-area.open {
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+        }
 
-        .complete-toggle-label { font-weight: bold; font-size: 0.95rem; color: #000; }
-        .complete-toggle-sub { font-size: 0.8rem; color: #888; margin-top: 3px;}
-        
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #ef5350; } 
-        input:checked + .slider:before { transform: translateX(24px); }
-        input:checked + .slider.blue { background-color: #1976d2; }
+        .complete-toggle-area:not(.open) {
+            border-radius: 8px;
+        }
 
-        #goal-end-date-container { display: none; padding: 15px; background: #fafafa; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px; animation: slideDown 0.2s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .time-input-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
-        .time-input-wrapper div { flex: 1; display: flex; align-items: center; gap: 5px; }
-        .time-input-wrapper span { white-space: nowrap; font-size: 0.9rem; }
-        .time-input-wrapper input { text-align: right; }
+        .setting-toggle-area {
+            margin-top: 10px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-        .check-group { margin-bottom: 15px; background: #fff; padding: 5px; border: 1px solid #eee; }
-        .check-item { display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; padding: 5px;}
-        .check-item:last-child { margin-bottom: 0; }
-        .check-item input { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; accent-color: #000; }
-        .check-item span { font-size: 0.95rem; }
+        .complete-toggle-label {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #000;
+        }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-group button { flex: 1; padding: 12px; border-radius: 0; border: none; cursor: pointer; font-weight: bold;}
-        .btn-save { background: #000; color: white; }
-        .btn-cancel { background: #f0f0f0; color: #333; }
-        
+        .complete-toggle-sub {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #ef5350;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        input:checked+.slider.blue {
+            background-color: #1976d2;
+        }
+
+        #goal-end-date-container {
+            display: none;
+            padding: 15px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .time-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .time-input-wrapper div {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .time-input-wrapper span {
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .time-input-wrapper input {
+            text-align: right;
+        }
+
+        .check-group {
+            margin-bottom: 15px;
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #eee;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .check-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .check-item input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #000;
+        }
+
+        .check-item span {
+            font-size: 0.95rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 0;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-save {
+            background: #000;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #f0f0f0;
+            color: #333;
+        }
+
         /* 이모지 선택기 */
-        .emoji-selector { display: flex; justify-content: space-around; margin: 20px 0; }
-        .emoji-option { font-size: 2.2rem; opacity: 0.3; cursor: pointer; transition: 0.2s;}
-        .emoji-option.selected { opacity: 1; transform: scale(1.2); }
+        .emoji-selector {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .emoji-option {
+            font-size: 2.2rem;
+            opacity: 0.3;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .emoji-option.selected {
+            opacity: 1;
+            transform: scale(1.2);
+        }
 
         /* 캘린더 스타일 */
-        .calendar-controls { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; background: #fff; }
-        .cal-btn { background: none; border: 1px solid #ddd; padding: 5px 12px; border-radius: 0; cursor: pointer; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
-        .cal-header { padding: 15px 0; font-weight: bold; color: #000; font-size: 0.8rem; }
-        
-        .cal-day { 
-            height: 70px; border-top: 1px solid #f5f5f5; position: relative; padding-top: 8px; cursor: pointer; transition: background-color 0.2s;
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: #fff;
         }
-        .cal-day:hover { background-color: #f9f9f9; }
 
-        .cal-day:nth-child(7n) { color: #5c6bc0; }   
-        .cal-day:nth-child(7n+1) { color: #ef5350; } 
-        .cal-date-num { font-size: 0.8rem; color: #ccc; position: absolute; top: 8px; left: 8px;}
-        .cal-day:nth-child(7n) .cal-date-num, .cal-day:nth-child(7n+1) .cal-date-num { color: inherit; opacity: 0.7; }
-        .cal-emoji { font-size: 1.8rem; position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); }
-        .cal-time { font-size: 0.65rem; color: #1976d2; position: absolute; top: 8px; right: 4px; font-weight: bold; }
-        .calendar-summary { padding: 20px; background: #fafafa; border-top: 1px solid #eee; margin-top: 10px; margin-bottom: 80px; border-radius: 0 0 12px 12px; font-size: 0.9rem; color: #444; }
-        .summary-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .summary-item:last-child { margin-bottom: 0; }
-        .summary-label { font-weight: bold; color: #888; font-size: 0.85rem; }
-        .summary-value { font-weight: bold; color: #000; }
-        .summary-value.time { color: #1976d2; }
-        .summary-value.date { color: #555; font-weight: normal; font-size: 0.85rem;}
+        .cal-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 5px 12px;
+            border-radius: 0;
+            cursor: pointer;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+
+        .cal-header {
+            padding: 15px 0;
+            font-weight: bold;
+            color: #000;
+            font-size: 0.8rem;
+        }
+
+        .cal-day {
+            height: 70px;
+            border-top: 1px solid #f5f5f5;
+            position: relative;
+            padding-top: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .cal-day:hover {
+            background-color: #f9f9f9;
+        }
+
+        .cal-day:nth-child(7n) {
+            color: #5c6bc0;
+        }
+
+        .cal-day:nth-child(7n+1) {
+            color: #ef5350;
+        }
+
+        .cal-date-num {
+            font-size: 0.8rem;
+            color: #ccc;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        .cal-day:nth-child(7n) .cal-date-num,
+        .cal-day:nth-child(7n+1) .cal-date-num {
+            color: inherit;
+            opacity: 0.7;
+        }
+
+        .cal-emoji {
+            font-size: 1.8rem;
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cal-time {
+            font-size: 0.65rem;
+            color: #1976d2;
+            position: absolute;
+            top: 8px;
+            right: 4px;
+            font-weight: bold;
+        }
+
+        .calendar-summary {
+            padding: 20px;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+            margin-bottom: 80px;
+            border-radius: 0 0 12px 12px;
+            font-size: 0.9rem;
+            color: #444;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            font-weight: bold;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .summary-value {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .summary-value.time {
+            color: #1976d2;
+        }
+
+        .summary-value.date {
+            color: #555;
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
 
         /* 대시보드 테이블 */
-        .dash-table-wrapper { overflow-x: auto; padding-bottom: 30px; background: #fff; border-bottom: 1px solid #eee; }
-        .dash-table { border-collapse: collapse; width: 100%; min-width: 800px; }
-        .dash-table th, .dash-table td { border: 1px solid #eee; padding: 10px; text-align: center; font-size: 0.9rem; }
-        .dash-table th { background-color: #fafafa; font-weight: bold; color: #555; min-width: 30px; }
-        .sticky-col { position: sticky; left: 0; background-color: #fff; z-index: 5; border-right: 2px solid #ddd !important; text-align: left !important; min-width: 120px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); cursor: pointer; transition: background-color 0.2s; }
-        .sticky-col:hover { background-color: #f0f0f0; }
-        .dash-table th.sticky-col { background-color: #fafafa; z-index: 6; cursor: default; }
-        .dash-goal-name { font-weight: bold; display: block; margin-bottom: 4px; color: #333; }
-        .dash-total-time { font-size: 0.75rem; color: #1976d2; font-weight: bold; }
-        .dash-emoji { font-size: 1.2rem; }
-        .dash-clickable-cell { cursor: pointer; transition: 0.2s; }
-        .dash-clickable-cell:hover { background-color: #f0f0f0; }
+        .dash-table-wrapper {
+            overflow-x: auto;
+            padding-bottom: 30px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
 
+        .dash-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 800px;
+        }
+
+        .dash-table th,
+        .dash-table td {
+            border: 1px solid #eee;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .dash-table th {
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #555;
+            min-width: 30px;
+        }
+
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background-color: #fff;
+            z-index: 5;
+            border-right: 2px solid #ddd !important;
+            text-align: left !important;
+            min-width: 120px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sticky-col:hover {
+            background-color: #f0f0f0;
+        }
+
+        .dash-table th.sticky-col {
+            background-color: #fafafa;
+            z-index: 6;
+            cursor: default;
+        }
+
+        .dash-goal-name {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .dash-total-time {
+            font-size: 0.75rem;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .dash-emoji {
+            font-size: 1.2rem;
+        }
+
+        .dash-clickable-cell {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .dash-clickable-cell:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
+
 <body>
 
-<div id="loading-screen">
-    <div class="loader"></div>
-    <div>잠시만 기다려주세요...</div>
-</div>
-
-<div class="container" id="main-container">
-
-    <div id="login-screen" style="display: none;">
-        <div class="login-card">
-            <h1>Reminder</h1>
-            <p style="color:#666">잊기 쉬운 나의 다짐을<br>작은 목표들로 실천해보세요.</p>
-            <button class="google-btn" onclick="googleLogin()">
-                G 구글 계정으로 시작하기
-            </button>
-        </div>
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div>잠시만 기다려주세요...</div>
     </div>
 
-    <div id="screen-dashboard" style="display: none;">
-        <header>
-            <button class="back-btn" onclick="showScreen('goal')">◀</button>
-            <h1>대시보드</h1>
-            <div style="width: 30px;"></div>
-        </header>
+    <div class="container" id="main-container">
 
-        <div class="calendar-controls">
-            <button class="cal-btn" onclick="changeDashMonth(-1)">◀</button>
-            <span id="dash-year-month" style="font-weight:bold; font-size:1.1rem;"></span>
-            <button class="cal-btn" onclick="changeDashMonth(1)">▶</button>
-        </div>
-
-        <div class="dash-table-wrapper">
-            <table class="dash-table" id="dash-table"></table>
-        </div>
-        <div style="padding: 20px; color:#999; font-size:0.8rem; text-align: center;">
-            목표 이름을 클릭하면 상세 내역으로 이동합니다.<br>
-            칸을 클릭하여 결과를 기록하거나 수정하세요.
-        </div>
-    </div>
-
-    <div id="screen-goal-list" style="display: none;">
-        <header>
-            <button class="header-left-btn" onclick="showScreen('dashboard')">
-                <svg class="dashboard-icon" viewBox="0 0 24 24">
-                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                </svg>
-                <span>대시보드</span>
-            </button>
-
-            <h1>REMINDER</h1>
-
-            <div class="profile-container">
-                <button class="profile-avatar-btn" id="header-avatar-btn" onclick="toggleProfileMenu()">
-                    ?
+        <div id="login-screen" style="display: none;">
+            <div class="login-card">
+                <h1>Reminder</h1>
+                <p style="color:#666">잊기 쉬운 나의 다짐을<br>작은 목표들로 실천해보세요.</p>
+                <button class="google-btn" onclick="googleLogin()">
+                    G 구글 계정으로 시작하기
                 </button>
-                
-                <div class="profile-dropdown" id="profile-dropdown-menu">
-                    <div class="pop-header">
-                        <div class="pop-email" id="pop-email-text">user@email.com</div>
-                        <button class="pop-close-btn" onclick="toggleProfileMenu()">×</button>
-                    </div>
-
-                    <div class="pop-big-avatar" id="pop-big-avatar">?</div>
-                    <div class="pop-greeting" id="pop-greeting">안녕하세요, User님.</div>
-                    
-                    <div class="pop-menu-list">
-                        <button class="pop-menu-item" onclick="googleLogin()">
-                            <svg class="pop-svg" viewBox="0 0 24 24">
-                                <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                            <span>다른 계정 추가</span>
-                        </button>
-                        <button class="pop-menu-item" onclick="googleLogout()">
-                            <svg class="pop-svg" viewBox="0 0 24 24">
-                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                            </svg>
-                            <span>모든 계정에서 로그아웃</span>
-                        </button>
-                    </div>
-                </div>
             </div>
-        </header>
-        
-        <div class="filter-bar">
-            <button class="filter-btn active" id="filter-all" onclick="selectGoalFilter('all')">전체</button>
-            <button class="filter-btn" id="filter-건강" onclick="selectGoalFilter('건강')">건강</button>
-            <button class="filter-btn" id="filter-자기계발" onclick="selectGoalFilter('자기계발')">자기계발</button>
-            <button class="filter-btn" id="filter-업무" onclick="selectGoalFilter('업무')">업무/학업</button>
-            <button class="filter-btn" id="filter-자산" onclick="selectGoalFilter('자산')">자산관리</button>
-            <button class="filter-btn" id="filter-생활" onclick="selectGoalFilter('생활')">생활습관</button>
-            <button class="filter-btn" id="filter-취미" onclick="selectGoalFilter('취미')">취미/여가</button>
-            <button class="filter-btn" id="filter-육아" onclick="selectGoalFilter('육아')">육아</button>
-            <button class="filter-btn" id="filter-기타" onclick="selectGoalFilter('기타')">기타</button>
         </div>
 
-        <div class="list-controls">
-            <button id="edit-order-btn" class="control-btn" onclick="toggleEditMode()">
-                <svg class="btn-icon" viewBox="0 0 24 24">
-                    <path d="M7 20h2V8h3L8 4 4 8h3v12zm13-4h-3V4h-2v12h-3l4 4 4-4z"/>
-                </svg>
-                <span>순서 변경</span>
-            </button>
-        </div>
+        <div id="screen-dashboard" style="display: none;">
+            <header>
+                <button class="back-btn" onclick="showScreen('goal')">◀</button>
+                <h1>대시보드</h1>
+                <div style="width: 30px;"></div>
+            </header>
 
-        <div class="list-container" id="goal-list-container"></div>
-        <button class="fab-btn" onclick="openGoalModal()">+ 새 목표 추가</button>
-    </div>
-
-    <div id="screen-record-list" style="display: none;">
-        <header>
-            <button class="back-btn" onclick="showScreen('goal')">◀</button>
-            <h1 id="record-title-text">리마인더</h1>
-            <div style="width: 30px;"></div> 
-        </header>
-        
-        <div class="tab-bar">
-            <button class="tab-btn active" id="tab-list-btn" onclick="switchTab('list')">리스트</button>
-            <button class="tab-btn" id="tab-cal-btn" onclick="switchTab('calendar')">캘린더</button>
-        </div>
-
-        <div id="view-list">
-            <div class="list-container" id="record-list-container"></div>
-        </div>
-
-        <div id="view-calendar" style="display:none;">
             <div class="calendar-controls">
-                <button class="cal-btn" onclick="changeMonth(-1)">◀</button>
-                <span id="cal-year-month" style="font-weight:bold; font-size:1.1rem;"></span>
-                <button class="cal-btn" onclick="changeMonth(1)">▶</button>
+                <button class="cal-btn" onclick="changeDashMonth(-1)">◀</button>
+                <span id="dash-year-month" style="font-weight:bold; font-size:1.1rem;"></span>
+                <button class="cal-btn" onclick="changeDashMonth(1)">▶</button>
             </div>
-            <div class="calendar-grid" style="border-bottom:1px solid #eee;">
-                <div class="cal-header" style="color:#ef5350;">일</div>
-                <div class="cal-header">월</div>
-                <div class="cal-header">화</div>
-                <div class="cal-header">수</div>
-                <div class="cal-header">목</div>
-                <div class="cal-header">금</div>
-                <div class="cal-header" style="color:#5c6bc0;">토</div>
+
+            <div class="dash-table-wrapper">
+                <table class="dash-table" id="dash-table"></table>
             </div>
-            <div class="calendar-grid" id="calendar-body"></div>
-            <div id="calendar-summary" class="calendar-summary"></div>
+            <div style="padding: 20px; color:#999; font-size:0.8rem; text-align: center;">
+                목표 이름을 클릭하면 상세 내역으로 이동합니다.<br>
+                칸을 클릭하여 결과를 기록하거나 수정하세요.
+            </div>
         </div>
 
-        <button class="fab-btn" onclick="openRecordModal()">+ 오늘 결과 기록</button>
+        <div id="screen-goal-list" style="display: none;">
+            <header>
+                <button class="header-left-btn" onclick="showScreen('dashboard')">
+                    <svg class="dashboard-icon" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+                    </svg>
+                    <span>대시보드</span>
+                </button>
+
+                <h1>REMINDER</h1>
+
+                <div class="profile-container">
+                    <button class="profile-avatar-btn" id="header-avatar-btn" onclick="toggleProfileMenu()">
+                        ?
+                    </button>
+
+                    <div class="profile-dropdown" id="profile-dropdown-menu">
+                        <button class="pop-close-btn" onclick="toggleProfileMenu()">×</button>
+
+                        <div class="pop-header">
+                            <div class="pop-big-avatar" id="pop-big-avatar">?</div>
+                            <div class="pop-name" id="pop-name">User Name</div>
+                            <div class="pop-email" id="pop-email-text">user@email.com</div>
+                        </div>
+
+                        <div class="pop-menu-list">
+                            <button class="pop-menu-item" onclick="googleLogin()">
+                                <svg class="pop-svg" viewBox="0 0 24 24">
+                                    <path
+                                        d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                </svg>
+                                <span>다른 계정 추가</span>
+                            </button>
+                            <button class="pop-menu-item" onclick="googleLogout()">
+                                <svg class="pop-svg" viewBox="0 0 24 24">
+                                    <path
+                                        d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+                                </svg>
+                                <span>모든 계정에서 로그아웃</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" id="filter-all" onclick="selectGoalFilter('all')">전체</button>
+                <button class="filter-btn" id="filter-건강" onclick="selectGoalFilter('건강')">건강</button>
+                <button class="filter-btn" id="filter-자기계발" onclick="selectGoalFilter('자기계발')">자기계발</button>
+                <button class="filter-btn" id="filter-업무" onclick="selectGoalFilter('업무')">업무/학업</button>
+                <button class="filter-btn" id="filter-자산" onclick="selectGoalFilter('자산')">자산관리</button>
+                <button class="filter-btn" id="filter-생활" onclick="selectGoalFilter('생활')">생활습관</button>
+                <button class="filter-btn" id="filter-취미" onclick="selectGoalFilter('취미')">취미/여가</button>
+                <button class="filter-btn" id="filter-육아" onclick="selectGoalFilter('육아')">육아</button>
+                <button class="filter-btn" id="filter-기타" onclick="selectGoalFilter('기타')">기타</button>
+            </div>
+
+            <div class="list-controls">
+                <button id="edit-order-btn" class="control-btn" onclick="toggleEditMode()">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <path d="M7 20h2V8h3L8 4 4 8h3v12zm13-4h-3V4h-2v12h-3l4 4 4-4z" />
+                    </svg>
+                    <span>순서 변경</span>
+                </button>
+            </div>
+
+            <div class="list-container" id="goal-list-container"></div>
+            <button class="fab-btn" onclick="openGoalModal()">+ 새 목표 추가</button>
+        </div>
+
+        <div id="screen-record-list" style="display: none;">
+            <header>
+                <button class="back-btn" onclick="showScreen('goal')">◀</button>
+                <h1 id="record-title-text">리마인더</h1>
+                <div style="width: 30px;"></div>
+            </header>
+
+            <div class="tab-bar">
+                <button class="tab-btn active" id="tab-list-btn" onclick="switchTab('list')">리스트</button>
+                <button class="tab-btn" id="tab-cal-btn" onclick="switchTab('calendar')">캘린더</button>
+            </div>
+
+            <div id="view-list">
+                <div class="list-container" id="record-list-container"></div>
+            </div>
+
+            <div id="view-calendar" style="display:none;">
+                <div class="calendar-controls">
+                    <button class="cal-btn" onclick="changeMonth(-1)">◀</button>
+                    <span id="cal-year-month" style="font-weight:bold; font-size:1.1rem;"></span>
+                    <button class="cal-btn" onclick="changeMonth(1)">▶</button>
+                </div>
+                <div class="calendar-grid" style="border-bottom:1px solid #eee;">
+                    <div class="cal-header" style="color:#ef5350;">일</div>
+                    <div class="cal-header">월</div>
+                    <div class="cal-header">화</div>
+                    <div class="cal-header">수</div>
+                    <div class="cal-header">목</div>
+                    <div class="cal-header">금</div>
+                    <div class="cal-header" style="color:#5c6bc0;">토</div>
+                </div>
+                <div class="calendar-grid" id="calendar-body"></div>
+                <div id="calendar-summary" class="calendar-summary"></div>
+            </div>
+
+            <button class="fab-btn" onclick="openRecordModal()">+ 오늘 결과 기록</button>
+        </div>
+
     </div>
 
-</div>
+    <div id="modal-goal" class="modal">
+        <div class="modal-content">
+            <h3>리마인더 설정</h3>
+            <input type="hidden" id="goal-id-input">
 
-<div id="modal-goal" class="modal">
-    <div class="modal-content">
-        <h3>리마인더 설정</h3>
-        <input type="hidden" id="goal-id-input">
-        
-        <label style="font-weight:bold; font-size:0.9rem;">카테고리</label>
-        <select id="goal-category-input">
-            <option value="건강">💪 건강 (Health)</option>
-            <option value="자기계발">📚 자기계발 (Growth)</option>
-            <option value="업무">💼 업무/학업 (Work)</option>
-            <option value="자산">💰 자산관리 (Money)</option>
-            <option value="생활">🏠 생활습관 (Life)</option>
-            <option value="취미">🎨 취미/여가 (Hobby)</option>
-            <option value="육아">👶 육아 (Parenting)</option>
-            <option value="기타">✨ 기타 (Etc)</option>
-        </select>
+            <label style="font-weight:bold; font-size:0.9rem;">카테고리</label>
+            <select id="goal-category-input">
+                <option value="건강">💪 건강 (Health)</option>
+                <option value="자기계발">📚 자기계발 (Growth)</option>
+                <option value="업무">💼 업무/학업 (Work)</option>
+                <option value="자산">💰 자산관리 (Money)</option>
+                <option value="생활">🏠 생활습관 (Life)</option>
+                <option value="취미">🎨 취미/여가 (Hobby)</option>
+                <option value="육아">👶 육아 (Parenting)</option>
+                <option value="기타">✨ 기타 (Etc)</option>
+            </select>
 
-        <label style="font-weight:bold; font-size:0.9rem; margin-top:10px; display:block;">목표 시작일</label>
-        <input type="date" id="goal-start-date-input">
+            <label style="font-weight:bold; font-size:0.9rem; margin-top:10px; display:block;">목표 시작일</label>
+            <input type="date" id="goal-start-date-input">
 
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <div style="flex:1;">
-                <label style="font-weight:bold; font-size:0.9rem;">목표 이름</label>
-                <input type="text" id="goal-name-input" placeholder="예: 체중 감량하기"> 
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <div style="flex:1;">
+                    <label style="font-weight:bold; font-size:0.9rem;">목표 이름</label>
+                    <input type="text" id="goal-name-input" placeholder="예: 체중 감량하기">
+                </div>
             </div>
-        </div>
-        
-        <div class="setting-toggle-area">
-            <div>
-                <div class="complete-toggle-label">⏱️ 투자 시간 계산</div>
-                <div class="complete-toggle-sub">이 목표에 쓴 시간을 기록할까요?</div>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="goal-time-toggle">
-                <span class="slider blue"></span>
-            </label>
-        </div>
 
-        <label style="font-weight:bold; font-size:0.9rem; margin-top:15px; display:block;">하위 실천 목표</label>
-        <div class="subgoal-input-group">
-            <input type="text" id="subgoal-temp-input" placeholder="예: 밤에 먹지 않기" style="flex:1;">
-            <button class="btn-add-sub" onclick="addTempSubGoal()">+</button>
-        </div>
-        <ul id="subgoal-list-ui" class="subgoal-list-ui"></ul>
-
-        <div class="complete-toggle-area" id="complete-toggle-area" style="display:none;">
-            <div>
-                <div class="complete-toggle-label">🎉 목표 달성 완료!</div>
-                <div class="complete-toggle-sub">더 이상 리마인드가 필요 없나요?</div>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="goal-complete-toggle" onchange="toggleCompleteDate()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div id="goal-end-date-container">
-            <label style="font-weight:bold; font-size:0.9rem; color:#ef5350;">달성일</label>
-            <input type="date" id="goal-end-date-input">
-        </div>
-
-        <div class="btn-group">
-            <button class="btn-cancel" onclick="closeModals()">취소</button>
-            <button class="btn-save" onclick="saveGoal()">저장하기</button>
-        </div>
-    </div>
-</div>
-
-<div id="modal-record" class="modal">
-    <div class="modal-content">
-        <h3>📝 결과 기록</h3>
-        <input type="hidden" id="record-id-input">
-        
-        <label style="font-weight:bold; font-size:0.9rem;">날짜</label>
-        <input type="date" id="record-date-input">
-
-        <div id="record-time-input-area" style="display:none; margin-top:10px;">
-            <label style="font-weight:bold; font-size:0.9rem; color:#1976d2;">⏱️ 투자 시간</label>
-            <div class="time-input-wrapper">
+            <div class="setting-toggle-area">
                 <div>
-                    <input type="number" id="record-time-hour" placeholder="0"> <span>시간</span>
+                    <div class="complete-toggle-label">⏱️ 투자 시간 계산</div>
+                    <div class="complete-toggle-sub">이 목표에 쓴 시간을 기록할까요?</div>
                 </div>
+                <label class="switch">
+                    <input type="checkbox" id="goal-time-toggle">
+                    <span class="slider blue"></span>
+                </label>
+            </div>
+
+            <label style="font-weight:bold; font-size:0.9rem; margin-top:15px; display:block;">하위 실천 목표</label>
+            <div class="subgoal-input-group">
+                <input type="text" id="subgoal-temp-input" placeholder="예: 밤에 먹지 않기" style="flex:1;">
+                <button class="btn-add-sub" onclick="addTempSubGoal()">+</button>
+            </div>
+            <ul id="subgoal-list-ui" class="subgoal-list-ui"></ul>
+
+            <div class="complete-toggle-area" id="complete-toggle-area" style="display:none;">
                 <div>
-                    <input type="number" id="record-time-minute" placeholder="0"> <span>분</span>
+                    <div class="complete-toggle-label">🎉 목표 달성 완료!</div>
+                    <div class="complete-toggle-sub">더 이상 리마인드가 필요 없나요?</div>
                 </div>
+                <label class="switch">
+                    <input type="checkbox" id="goal-complete-toggle" onchange="toggleCompleteDate()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div id="goal-end-date-container">
+                <label style="font-weight:bold; font-size:0.9rem; color:#ef5350;">달성일</label>
+                <input type="date" id="goal-end-date-input">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-cancel" onclick="closeModals()">취소</button>
+                <button class="btn-save" onclick="saveGoal()">저장하기</button>
             </div>
         </div>
+    </div>
 
-        <div id="record-subgoal-area" style="display:none; margin-top:15px;">
-            <label style="font-weight:bold; font-size:0.9rem; margin-bottom:5px; display:block;">오늘의 달성 항목</label>
-            <div class="check-group" id="record-check-list">
+    <div id="modal-record" class="modal">
+        <div class="modal-content">
+            <h3>📝 결과 기록</h3>
+            <input type="hidden" id="record-id-input">
+
+            <label style="font-weight:bold; font-size:0.9rem;">날짜</label>
+            <input type="date" id="record-date-input">
+
+            <div id="record-time-input-area" style="display:none; margin-top:10px;">
+                <label style="font-weight:bold; font-size:0.9rem; color:#1976d2;">⏱️ 투자 시간</label>
+                <div class="time-input-wrapper">
+                    <div>
+                        <input type="number" id="record-time-hour" placeholder="0"> <span>시간</span>
+                    </div>
+                    <div>
+                        <input type="number" id="record-time-minute" placeholder="0"> <span>분</span>
+                    </div>
                 </div>
-        </div>
+            </div>
 
-        <label style="font-weight:bold; font-size:0.9rem; margin-top:10px; display:block;">오늘의 실천 결과</label>
-        <div class="emoji-selector">
-            <span class="emoji-option" onclick="selectEmoji('smile')" id="opt-smile">😄</span>
-            <span class="emoji-option" onclick="selectEmoji('neutral')" id="opt-neutral">😐</span>
-            <span class="emoji-option" onclick="selectEmoji('sad')" id="opt-sad">😭</span>
-        </div>
-        
-        <label style="font-weight:bold; font-size:0.9rem;">실천 일기</label>
-        <textarea id="record-diary-input" rows="3" placeholder="기록하고 싶은 내용이 있나요?"></textarea>
-        
-        <div class="btn-group">
-            <button class="btn-cancel" onclick="closeModals()">취소</button>
-            <button class="btn-save" onclick="saveRecord()">저장하기</button>
+            <div id="record-subgoal-area" style="display:none; margin-top:15px;">
+                <label style="font-weight:bold; font-size:0.9rem; margin-bottom:5px; display:block;">오늘의 달성 항목</label>
+                <div class="check-group" id="record-check-list">
+                </div>
+            </div>
+
+            <label style="font-weight:bold; font-size:0.9rem; margin-top:10px; display:block;">오늘의 실천 결과</label>
+            <div class="emoji-selector">
+                <span class="emoji-option" onclick="selectEmoji('smile')" id="opt-smile">😄</span>
+                <span class="emoji-option" onclick="selectEmoji('neutral')" id="opt-neutral">😐</span>
+                <span class="emoji-option" onclick="selectEmoji('sad')" id="opt-sad">😭</span>
+            </div>
+
+            <label style="font-weight:bold; font-size:0.9rem;">실천 일기</label>
+            <textarea id="record-diary-input" rows="3" placeholder="기록하고 싶은 내용이 있나요?"></textarea>
+
+            <div class="btn-group">
+                <button class="btn-cancel" onclick="closeModals()">취소</button>
+                <button class="btn-save" onclick="saveRecord()">저장하기</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./service-worker.js');
-        });
-    }
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyD8kAckZ62IGVc9VdJ8rAyBa2DuOJjQRsA",
-        authDomain: "reminder-42a85.firebaseapp.com",
-        projectId: "reminder-42a85",
-        storageBucket: "reminder-42a85.firebasestorage.app",
-        messagingSenderId: "447940194490",
-        appId: "1:447940194490:web:eae283179f264d330e1283"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    let user = null;            
-    let goals = [];             
-    let subGoalsMap = {};       
-    let records = [];           
-    let currentGoalId = null;   
-    let currentEmoji = '';      
-    let calYear = new Date().getFullYear(); 
-    let calMonth = new Date().getMonth();
-    let dashYear = new Date().getFullYear();
-    let dashMonth = new Date().getMonth();
-    let currentGoalFilter = 'all'; 
-    let tempSubGoals = [];         
-    let isEditMode = false;        
-    let goalSortable = null;
-    let subGoalSortable = null;
-
-    const ICON_EDIT = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
-    const ICON_DELETE = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
-
-    auth.onAuthStateChanged((currentUser) => {
-        document.getElementById('loading-screen').style.display = 'none'; 
-        if (currentUser) {
-            user = currentUser;
-            
-            const displayName = user.displayName || "User";
-            const email = user.email || "";
-            const initial = displayName.charAt(0).toUpperCase();
-            
-            // 헤더 아바타
-            document.getElementById('header-avatar-btn').innerText = initial;
-            
-            // 팝업 내부 정보
-            document.getElementById('pop-email-text').innerText = email;
-            document.getElementById('pop-big-avatar').innerText = initial;
-            document.getElementById('pop-greeting').innerText = `안녕하세요, ${displayName}님.`;
-
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('screen-goal-list').style.display = 'block';
-            loadDataFromCloud(); 
-        } else {
-            user = null;
-            document.getElementById('login-screen').style.display = 'block';
-            document.getElementById('screen-goal-list').style.display = 'none';
-            document.getElementById('screen-record-list').style.display = 'none';
-            document.getElementById('screen-dashboard').style.display = 'none';
-        }
-    });
-
-    // 프로필 메뉴 토글 함수
-    function toggleProfileMenu() {
-        const menu = document.getElementById('profile-dropdown-menu');
-        menu.classList.toggle('show');
-    }
-
-    // 화면의 다른 곳을 클릭하면 메뉴 닫기
-    window.onclick = function(event) {
-        if (!event.target.matches('.profile-avatar-btn') && !event.target.closest('.profile-dropdown')) {
-            const menu = document.getElementById('profile-dropdown-menu');
-            if (menu && menu.classList.contains('show')) {
-                menu.classList.remove('show');
-            }
-        }
-        if (event.target.classList.contains('modal')) closeModals();
-    }
-
-    function googleLogin() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch((error) => alert("로그인 실패: " + error.message));
-    }
-    function googleLogout() {
-        auth.signOut();
-        goals = []; records = []; subGoalsMap = {};
-    }
-
-    function loadDataFromCloud() {
-        if (!user) return;
-        
-        db.collection('goals')
-          .where("uid", "==", user.uid) 
-          .orderBy('order', 'asc')      
-          .get()
-          .then((qs) => {
-            goals = [];
-            qs.forEach((doc) => goals.push({ id: doc.id, ...doc.data() }));
-            renderGoalList(); 
-        })
-        .catch((error) => {
-            console.error("목표 불러오기 실패:", error);
-        });
-
-        db.collection('subgoals').where("uid", "==", user.uid).get().then((qs) => {
-            subGoalsMap = {};
-            qs.forEach((doc) => {
-                const data = doc.data();
-                if(!subGoalsMap[data.goalId]) subGoalsMap[data.goalId] = [];
-                subGoalsMap[data.goalId].push({ id: doc.id, ...data });
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js');
             });
-            renderGoalList(); 
-        });
-
-        db.collection('records').where("uid", "==", user.uid).get().then((qs) => {
-            records = [];
-            qs.forEach((doc) => records.push({ id: doc.id, ...doc.data() }));
-            if(document.getElementById('screen-goal-list').style.display === 'block') {
-                renderGoalList();
-            }
-        });
-    }
-
-    function toggleEditMode() {
-        isEditMode = !isEditMode; 
-        const btn = document.getElementById('edit-order-btn');
-        const container = document.getElementById('main-container');
-        
-        if (isEditMode) {
-            const iconHtml = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M7 20h2V8h3L8 4 4 8h3v12zm13-4h-3V4h-2v12h-3l4 4 4-4z"/></svg>`;
-            btn.innerHTML = `${iconHtml}<span>편집 완료</span>`;
-            
-            btn.classList.add('active');
-            container.classList.add('editing-mode');
-        } else {
-            const iconHtml = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M7 20h2V8h3L8 4 4 8h3v12zm13-4h-3V4h-2v12h-3l4 4 4-4z"/></svg>`;
-            btn.innerHTML = `${iconHtml}<span>순서 변경</span>`;
-            
-            btn.classList.remove('active');
-            container.classList.remove('editing-mode');
         }
-    }
 
-    function selectGoalFilter(category) {
-        currentGoalFilter = category;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.getElementById('filter-' + category).classList.add('active');
-        renderGoalList(); 
-    }
+        const firebaseConfig = {
+            apiKey: "AIzaSyD8kAckZ62IGVc9VdJ8rAyBa2DuOJjQRsA",
+            authDomain: "reminder-42a85.firebaseapp.com",
+            projectId: "reminder-42a85",
+            storageBucket: "reminder-42a85.firebasestorage.app",
+            messagingSenderId: "447940194490",
+            appId: "1:447940194490:web:eae283179f264d330e1283"
+        };
 
-    function openGoalModal(id = null) {
-        document.getElementById('modal-goal').style.display = 'flex';
-        
-        const nameInput = document.getElementById('goal-name-input');
-        const catInput = document.getElementById('goal-category-input'); 
-        const dateInput = document.getElementById('goal-start-date-input');
-        const idInput = document.getElementById('goal-id-input');
-        const completeArea = document.getElementById('complete-toggle-area');
-        const completeToggle = document.getElementById('goal-complete-toggle');
-        const endDateInput = document.getElementById('goal-end-date-input');
-        const timeToggle = document.getElementById('goal-time-toggle'); 
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        document.getElementById('subgoal-temp-input').value = '';
-        tempSubGoals = []; 
+        let user = null;
+        let goals = [];
+        let subGoalsMap = {};
+        let records = [];
+        let currentGoalId = null;
+        let currentEmoji = '';
+        let calYear = new Date().getFullYear();
+        let calMonth = new Date().getMonth();
+        let dashYear = new Date().getFullYear();
+        let dashMonth = new Date().getMonth();
+        let currentGoalFilter = 'all';
+        let tempSubGoals = [];
+        let isEditMode = false;
+        let goalSortable = null;
+        let subGoalSortable = null;
 
-        if (id) {
-            const goal = goals.find(g => g.id === id);
-            nameInput.value = goal.name;
-            catInput.value = goal.category || '기타'; 
-            dateInput.value = goal.startDate || new Date().toISOString().substring(0, 10);
-            idInput.value = id;
-            timeToggle.checked = !!goal.useTimeTracker;
-            completeArea.style.display = 'flex';
-            
-            if (goal.completedAt) {
-                completeToggle.checked = true;
-                const doneDate = goal.completedAt.toDate ? goal.completedAt.toDate() : new Date(goal.completedAt.seconds * 1000);
-                endDateInput.value = doneDate.toISOString().substring(0, 10);
+        const ICON_EDIT = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
+        const ICON_DELETE = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
+
+        auth.onAuthStateChanged((currentUser) => {
+            document.getElementById('loading-screen').style.display = 'none';
+            if (currentUser) {
+                user = currentUser;
+
+                const displayName = user.displayName || "User";
+                const email = user.email || "";
+                const initial = displayName.charAt(0).toUpperCase();
+
+                // 헤더 아바타
+                document.getElementById('header-avatar-btn').innerText = initial;
+
+                // 팝업 내부 정보
+                document.getElementById('pop-email-text').innerText = email;
+                document.getElementById('pop-big-avatar').innerText = initial;
+                document.getElementById('pop-name').innerText = displayName;
+
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('screen-goal-list').style.display = 'block';
+                loadDataFromCloud();
             } else {
-                completeToggle.checked = false;
-                endDateInput.value = new Date().toISOString().substring(0, 10); 
+                user = null;
+                document.getElementById('login-screen').style.display = 'block';
+                document.getElementById('screen-goal-list').style.display = 'none';
+                document.getElementById('screen-record-list').style.display = 'none';
+                document.getElementById('screen-dashboard').style.display = 'none';
             }
-
-            if(subGoalsMap[id]) {
-                let sortedSubs = [...subGoalsMap[id]].sort((a,b) => (a.order||0) - (b.order||0));
-                tempSubGoals = sortedSubs.map(sg => ({...sg, isDeleted: false})); 
-            }
-        } else { 
-            nameInput.value = ''; 
-            catInput.value = '기타'; 
-            dateInput.value = new Date().toISOString().substring(0, 10); 
-            idInput.value = ''; 
-            timeToggle.checked = false; 
-            completeArea.style.display = 'none';
-            completeToggle.checked = false;
-            endDateInput.value = new Date().toISOString().substring(0, 10);
-        }
-        
-        toggleCompleteDate();
-        renderTempSubGoals();
-        
-        const el = document.getElementById('subgoal-list-ui');
-        if(subGoalSortable) subGoalSortable.destroy();
-        subGoalSortable = Sortable.create(el, {
-            handle: '.subgoal-drag-handle',
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            onEnd: function (evt) {
-                const itemEl = tempSubGoals[evt.oldIndex];
-                tempSubGoals.splice(evt.oldIndex, 1);
-                tempSubGoals.splice(evt.newIndex, 0, itemEl);
-            },
         });
 
-        nameInput.focus();
-    }
-
-    function toggleCompleteDate() {
-        const isChecked = document.getElementById('goal-complete-toggle').checked;
-        const container = document.getElementById('goal-end-date-container');
-        const toggleArea = document.getElementById('complete-toggle-area');
-        if (isChecked) {
-            container.style.display = 'block';
-            toggleArea.classList.add('open');
-        } else {
-            container.style.display = 'none';
-            toggleArea.classList.remove('open');
+        // 프로필 메뉴 토글 함수
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profile-dropdown-menu');
+            menu.classList.toggle('show');
         }
-    }
 
-    function addTempSubGoal() {
-        const input = document.getElementById('subgoal-temp-input');
-        const val = input.value.trim();
-        if(!val) return;
-        tempSubGoals.push({ name: val, isNew: true });
-        input.value = '';
-        renderTempSubGoals();
-        input.focus();
-    }
-
-    function removeTempSubGoal(index) {
-        if(tempSubGoals[index].id) {
-            tempSubGoals[index].isDeleted = true; 
-        } else {
-            tempSubGoals.splice(index, 1); 
+        // 화면의 다른 곳을 클릭하면 메뉴 닫기
+        window.onclick = function (event) {
+            if (!event.target.matches('.profile-avatar-btn') && !event.target.closest('.profile-dropdown')) {
+                const menu = document.getElementById('profile-dropdown-menu');
+                if (menu && menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                }
+            }
+            if (event.target.classList.contains('modal')) closeModals();
         }
-        renderTempSubGoals();
-    }
 
-    function updateTempSubGoalName(index, newName) {
-        tempSubGoals[index].name = newName;
-    }
+        function googleLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch((error) => alert("로그인 실패: " + error.message));
+        }
+        function googleLogout() {
+            auth.signOut();
+            goals = []; records = []; subGoalsMap = {};
+        }
 
-    function renderTempSubGoals() {
-        const ul = document.getElementById('subgoal-list-ui');
-        ul.innerHTML = '';
-        tempSubGoals.forEach((item, idx) => {
-            if(item.isDeleted) return; 
-            const li = document.createElement('li');
-            li.className = 'subgoal-item-ui';
-            li.innerHTML = `
+        function loadDataFromCloud() {
+            if (!user) return;
+
+            db.collection('goals')
+                .where("uid", "==", user.uid)
+                .orderBy('order', 'asc')
+                .get()
+                .then((qs) => {
+                    goals = [];
+                    qs.forEach((doc) => goals.push({ id: doc.id, ...doc.data() }));
+                    renderGoalList();
+                })
+                .catch((error) => {
+                    console.error("목표 불러오기 실패:", error);
+                });
+
+            db.collection('subgoals').where("uid", "==", user.uid).get().then((qs) => {
+                subGoalsMap = {};
+                qs.forEach((doc) => {
+                    const data = doc.data();
+                    if (!subGoalsMap[data.goalId]) subGoalsMap[data.goalId] = [];
+                    subGoalsMap[data.goalId].push({ id: doc.id, ...data });
+                });
+                renderGoalList();
+            });
+
+            db.collection('records').where("uid", "==", user.uid).get().then((qs) => {
+                records = [];
+                qs.forEach((doc) => records.push({ id: doc.id, ...doc.data() }));
+                if (document.getElementById('screen-goal-list').style.display === 'block') {
+                    renderGoalList();
+                }
+            });
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('edit-order-btn');
+            const container = document.getElementById('main-container');
+
+            if (isEditMode) {
+                const iconHtml = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M7 20h2V8h3L8 4 4 8h3v12zm13-4h-3V4h-2v12h-3l4 4 4-4z"/></svg>`;
+                btn.innerHTML = `${iconHtml}<span>편집 완료</span>`;
+
+                btn.classList.add('active');
+                container.classList.add('editing-mode');
+            } else {
+                const iconHtml = `<svg class="btn-icon" viewBox="0 0 24 24"><path d="M7 20h2V8h3L8 4 4 8h3v12zm13-4h-3V4h-2v12h-3l4 4 4-4z"/></svg>`;
+                btn.innerHTML = `${iconHtml}<span>순서 변경</span>`;
+
+                btn.classList.remove('active');
+                container.classList.remove('editing-mode');
+            }
+        }
+
+        function selectGoalFilter(category) {
+            currentGoalFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('filter-' + category).classList.add('active');
+            renderGoalList();
+        }
+
+        function openGoalModal(id = null) {
+            document.getElementById('modal-goal').style.display = 'flex';
+
+            const nameInput = document.getElementById('goal-name-input');
+            const catInput = document.getElementById('goal-category-input');
+            const dateInput = document.getElementById('goal-start-date-input');
+            const idInput = document.getElementById('goal-id-input');
+            const completeArea = document.getElementById('complete-toggle-area');
+            const completeToggle = document.getElementById('goal-complete-toggle');
+            const endDateInput = document.getElementById('goal-end-date-input');
+            const timeToggle = document.getElementById('goal-time-toggle');
+
+            document.getElementById('subgoal-temp-input').value = '';
+            tempSubGoals = [];
+
+            if (id) {
+                const goal = goals.find(g => g.id === id);
+                nameInput.value = goal.name;
+                catInput.value = goal.category || '기타';
+                dateInput.value = goal.startDate || new Date().toISOString().substring(0, 10);
+                idInput.value = id;
+                timeToggle.checked = !!goal.useTimeTracker;
+                completeArea.style.display = 'flex';
+
+                if (goal.completedAt) {
+                    completeToggle.checked = true;
+                    const doneDate = goal.completedAt.toDate ? goal.completedAt.toDate() : new Date(goal.completedAt.seconds * 1000);
+                    endDateInput.value = doneDate.toISOString().substring(0, 10);
+                } else {
+                    completeToggle.checked = false;
+                    endDateInput.value = new Date().toISOString().substring(0, 10);
+                }
+
+                if (subGoalsMap[id]) {
+                    let sortedSubs = [...subGoalsMap[id]].sort((a, b) => (a.order || 0) - (b.order || 0));
+                    tempSubGoals = sortedSubs.map(sg => ({ ...sg, isDeleted: false }));
+                }
+            } else {
+                nameInput.value = '';
+                catInput.value = '기타';
+                dateInput.value = new Date().toISOString().substring(0, 10);
+                idInput.value = '';
+                timeToggle.checked = false;
+                completeArea.style.display = 'none';
+                completeToggle.checked = false;
+                endDateInput.value = new Date().toISOString().substring(0, 10);
+            }
+
+            toggleCompleteDate();
+            renderTempSubGoals();
+
+            const el = document.getElementById('subgoal-list-ui');
+            if (subGoalSortable) subGoalSortable.destroy();
+            subGoalSortable = Sortable.create(el, {
+                handle: '.subgoal-drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    const itemEl = tempSubGoals[evt.oldIndex];
+                    tempSubGoals.splice(evt.oldIndex, 1);
+                    tempSubGoals.splice(evt.newIndex, 0, itemEl);
+                },
+            });
+
+            nameInput.focus();
+        }
+
+        function toggleCompleteDate() {
+            const isChecked = document.getElementById('goal-complete-toggle').checked;
+            const container = document.getElementById('goal-end-date-container');
+            const toggleArea = document.getElementById('complete-toggle-area');
+            if (isChecked) {
+                container.style.display = 'block';
+                toggleArea.classList.add('open');
+            } else {
+                container.style.display = 'none';
+                toggleArea.classList.remove('open');
+            }
+        }
+
+        function addTempSubGoal() {
+            const input = document.getElementById('subgoal-temp-input');
+            const val = input.value.trim();
+            if (!val) return;
+            tempSubGoals.push({ name: val, isNew: true });
+            input.value = '';
+            renderTempSubGoals();
+            input.focus();
+        }
+
+        function removeTempSubGoal(index) {
+            if (tempSubGoals[index].id) {
+                tempSubGoals[index].isDeleted = true;
+            } else {
+                tempSubGoals.splice(index, 1);
+            }
+            renderTempSubGoals();
+        }
+
+        function updateTempSubGoalName(index, newName) {
+            tempSubGoals[index].name = newName;
+        }
+
+        function renderTempSubGoals() {
+            const ul = document.getElementById('subgoal-list-ui');
+            ul.innerHTML = '';
+            tempSubGoals.forEach((item, idx) => {
+                if (item.isDeleted) return;
+                const li = document.createElement('li');
+                li.className = 'subgoal-item-ui';
+                li.innerHTML = `
                 <div style="display:flex; align-items:center; width:100%;">
                     <span class="subgoal-drag-handle">≡</span>
                     <input type="text" class="subgoal-edit-name" value="${item.name}" onchange="updateTempSubGoalName(${idx}, this.value)">
                 </div>
                 <button onclick="removeTempSubGoal(${idx})">×</button>
             `;
-            ul.appendChild(li);
-        });
-    }
-
-    async function saveGoal() {
-        const name = document.getElementById('goal-name-input').value;
-        const category = document.getElementById('goal-category-input').value; 
-        const startDate = document.getElementById('goal-start-date-input').value;
-        const isCompleted = document.getElementById('goal-complete-toggle').checked;
-        const endDateVal = document.getElementById('goal-end-date-input').value;
-        const useTimeTracker = document.getElementById('goal-time-toggle').checked; 
-        const id = document.getElementById('goal-id-input').value;
-        
-        if (!name) return alert("목표명을 입력하세요.");
-        
-        let goalId = id;
-        
-        let order = goals.length + 1;
-        if(id) {
-            const existing = goals.find(g => g.id === id);
-            if(existing) order = existing.order;
+                ul.appendChild(li);
+            });
         }
 
-        const goalData = {
-            uid: user.uid, 
-            name: name,
-            order: order,
-            category: category,
-            startDate: startDate || new Date().toISOString().substring(0, 10),
-            useTimeTracker: useTimeTracker 
-        };
+        async function saveGoal() {
+            const name = document.getElementById('goal-name-input').value;
+            const category = document.getElementById('goal-category-input').value;
+            const startDate = document.getElementById('goal-start-date-input').value;
+            const isCompleted = document.getElementById('goal-complete-toggle').checked;
+            const endDateVal = document.getElementById('goal-end-date-input').value;
+            const useTimeTracker = document.getElementById('goal-time-toggle').checked;
+            const id = document.getElementById('goal-id-input').value;
 
-        if (id) {
-            if (isCompleted && endDateVal) {
-                goalData.completedAt = new Date(endDateVal);
-            } else {
-                goalData.completedAt = null;
-            }
-        }
+            if (!name) return alert("목표명을 입력하세요.");
 
-        if (goalId) {
-            await db.collection('goals').doc(goalId).update(goalData);
-        } else {
-            goalData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            goalData.completedAt = null; 
-            const docRef = await db.collection('goals').add(goalData);
-            goalId = docRef.id;
-        }
+            let goalId = id;
 
-        const batch = db.batch();
-        let hasUpdates = false;
-
-        let visibleIndex = 1;
-        tempSubGoals.forEach(sg => {
-            if (!sg.isDeleted) {
-                sg.order = visibleIndex++;
-            }
-        });
-
-        tempSubGoals.forEach(sg => {
-            if (sg.isNew && !sg.isDeleted) {
-                const newRef = db.collection('subgoals').doc();
-                batch.set(newRef, {
-                    uid: user.uid,
-                    goalId: goalId,
-                    name: sg.name,
-                    order: sg.order, 
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                hasUpdates = true;
-            } else if (sg.id && sg.isDeleted) { 
-                const delRef = db.collection('subgoals').doc(sg.id);
-                batch.delete(delRef);
-                hasUpdates = true;
-            } else if (sg.id && !sg.isDeleted) { 
-                const updateRef = db.collection('subgoals').doc(sg.id);
-                batch.update(updateRef, {
-                    name: sg.name,
-                    order: sg.order
-                });
-                hasUpdates = true;
-            }
-        });
-
-        if(hasUpdates) await batch.commit();
-
-        loadDataFromCloud();
-        closeModals();
-    }
-
-    function deleteGoal(id) {
-        if (confirm("정말 삭제하시겠습니까? 관련 기록과 하위목표가 모두 사라집니다.")) {
-            db.collection('goals').doc(id).delete();
-            const relatedRecords = records.filter(r => r.goalId === id);
-            relatedRecords.forEach(rec => db.collection('records').doc(rec.id).delete());
-            if(subGoalsMap[id]) {
-                subGoalsMap[id].forEach(sg => db.collection('subgoals').doc(sg.id).delete());
-            }
-            setTimeout(loadDataFromCloud, 500);
-        }
-    }
-
-    function renderGoalList() {
-        const container = document.getElementById('goal-list-container');
-        container.innerHTML = ''; 
-        
-        let filteredGoals = goals;
-        if (currentGoalFilter !== 'all') {
-            filteredGoals = goals.filter(g => g.category === currentGoalFilter);
-        }
-
-        if (filteredGoals.length === 0) {
-            let msg = '등록된 목표가 없습니다.<br>새로운 목표를 추가해보세요!';
-            if (goals.length > 0 && filteredGoals.length === 0) {
-                msg = `해당 카테고리의 목표가 없습니다.`;
-            }
-            container.innerHTML = `<p style="text-align:center; color:#999; margin-top:80px; font-size:0.9rem;">${msg}</p>`;
-            return;
-        }
-
-        filteredGoals.sort((a,b) => {
-            const aDone = !!a.completedAt;
-            const bDone = !!b.completedAt;
-            if (aDone !== bDone) return aDone ? 1 : -1; 
-            return (a.order||0) - (b.order||0);
-        });
-
-        filteredGoals.forEach(goal => {
-            const div = document.createElement('div');
-            div.setAttribute('data-id', goal.id);
-            
-            const isCompleted = !!goal.completedAt;
-            div.className = `card ${isCompleted ? 'completed' : ''}`;
-            
-            const mySubGoals = subGoalsMap[goal.id] || [];
-            let subHtml = '';
-            
-            if (mySubGoals.length > 0) {
-                mySubGoals.sort((a, b) => (a.order || 0) - (b.order || 0));
-                const subItems = mySubGoals.map(sg => 
-                    `<div style="font-size:0.95rem; color:#555; margin-top:6px; font-weight:400; display:flex; align-items:flex-start;">
-                        <span style="color:#aaa; margin-right:6px;">•</span>
-                        <span>${sg.name}</span>
-                    </div>`
-                ).join('');
-                subHtml = `<div style="margin-top:12px; padding-top:10px; border-top:1px dashed #eee;">${subItems}</div>`;
+            let order = goals.length + 1;
+            if (id) {
+                const existing = goals.find(g => g.id === id);
+                if (existing) order = existing.order;
             }
 
-            const catName = goal.category || '기타';
-            const catBadge = `<div class="category-badge">${catName}</div>`;
-            const completedBadgeHtml = isCompleted ? `<div class="completed-badge">달성</div>` : '';
+            const goalData = {
+                uid: user.uid,
+                name: name,
+                order: order,
+                category: category,
+                startDate: startDate || new Date().toISOString().substring(0, 10),
+                useTimeTracker: useTimeTracker
+            };
 
-            let dateStr = `${goal.startDate || '날짜미정'} 시작`;
-            if (isCompleted && goal.completedAt) {
-                const dateObj = goal.completedAt.toDate ? goal.completedAt.toDate() : new Date(goal.completedAt.seconds * 1000);
-                const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                dateStr = `${goal.startDate} ~ ${year}.${month}.${day} 달성`;
-            }
-
-            let timeBadgeHtml = '';
-            if (goal.useTimeTracker) {
-                const relatedRecords = records.filter(r => r.goalId === goal.id);
-                const totalMinutes = relatedRecords.reduce((sum, r) => sum + (parseInt(r.time) || 0), 0);
-                
-                if (totalMinutes > 0) {
-                    const h = Math.floor(totalMinutes / 60);
-                    const m = totalMinutes % 60;
-                    const timeStr = h > 0 ? `${h}시간 ${m}분` : `${m}분`;
-                    timeBadgeHtml = `<div class="total-time-badge"><span>⏱️</span> <span>Total ${timeStr}</span></div>`;
+            if (id) {
+                if (isCompleted && endDateVal) {
+                    goalData.completedAt = new Date(endDateVal);
+                } else {
+                    goalData.completedAt = null;
                 }
             }
 
-            div.innerHTML = `
+            if (goalId) {
+                await db.collection('goals').doc(goalId).update(goalData);
+            } else {
+                goalData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                goalData.completedAt = null;
+                const docRef = await db.collection('goals').add(goalData);
+                goalId = docRef.id;
+            }
+
+            const batch = db.batch();
+            let hasUpdates = false;
+
+            let visibleIndex = 1;
+            tempSubGoals.forEach(sg => {
+                if (!sg.isDeleted) {
+                    sg.order = visibleIndex++;
+                }
+            });
+
+            tempSubGoals.forEach(sg => {
+                if (sg.isNew && !sg.isDeleted) {
+                    const newRef = db.collection('subgoals').doc();
+                    batch.set(newRef, {
+                        uid: user.uid,
+                        goalId: goalId,
+                        name: sg.name,
+                        order: sg.order,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    hasUpdates = true;
+                } else if (sg.id && sg.isDeleted) {
+                    const delRef = db.collection('subgoals').doc(sg.id);
+                    batch.delete(delRef);
+                    hasUpdates = true;
+                } else if (sg.id && !sg.isDeleted) {
+                    const updateRef = db.collection('subgoals').doc(sg.id);
+                    batch.update(updateRef, {
+                        name: sg.name,
+                        order: sg.order
+                    });
+                    hasUpdates = true;
+                }
+            });
+
+            if (hasUpdates) await batch.commit();
+
+            loadDataFromCloud();
+            closeModals();
+        }
+
+        function deleteGoal(id) {
+            if (confirm("정말 삭제하시겠습니까? 관련 기록과 하위목표가 모두 사라집니다.")) {
+                db.collection('goals').doc(id).delete();
+                const relatedRecords = records.filter(r => r.goalId === id);
+                relatedRecords.forEach(rec => db.collection('records').doc(rec.id).delete());
+                if (subGoalsMap[id]) {
+                    subGoalsMap[id].forEach(sg => db.collection('subgoals').doc(sg.id).delete());
+                }
+                setTimeout(loadDataFromCloud, 500);
+            }
+        }
+
+        function renderGoalList() {
+            const container = document.getElementById('goal-list-container');
+            container.innerHTML = '';
+
+            let filteredGoals = goals;
+            if (currentGoalFilter !== 'all') {
+                filteredGoals = goals.filter(g => g.category === currentGoalFilter);
+            }
+
+            if (filteredGoals.length === 0) {
+                let msg = '등록된 목표가 없습니다.<br>새로운 목표를 추가해보세요!';
+                if (goals.length > 0 && filteredGoals.length === 0) {
+                    msg = `해당 카테고리의 목표가 없습니다.`;
+                }
+                container.innerHTML = `<p style="text-align:center; color:#999; margin-top:80px; font-size:0.9rem;">${msg}</p>`;
+                return;
+            }
+
+            filteredGoals.sort((a, b) => {
+                const aDone = !!a.completedAt;
+                const bDone = !!b.completedAt;
+                if (aDone !== bDone) return aDone ? 1 : -1;
+                return (a.order || 0) - (b.order || 0);
+            });
+
+            filteredGoals.forEach(goal => {
+                const div = document.createElement('div');
+                div.setAttribute('data-id', goal.id);
+
+                const isCompleted = !!goal.completedAt;
+                div.className = `card ${isCompleted ? 'completed' : ''}`;
+
+                const mySubGoals = subGoalsMap[goal.id] || [];
+                let subHtml = '';
+
+                if (mySubGoals.length > 0) {
+                    mySubGoals.sort((a, b) => (a.order || 0) - (b.order || 0));
+                    const subItems = mySubGoals.map(sg =>
+                        `<div style="font-size:0.95rem; color:#555; margin-top:6px; font-weight:400; display:flex; align-items:flex-start;">
+                        <span style="color:#aaa; margin-right:6px;">•</span>
+                        <span>${sg.name}</span>
+                    </div>`
+                    ).join('');
+                    subHtml = `<div style="margin-top:12px; padding-top:10px; border-top:1px dashed #eee;">${subItems}</div>`;
+                }
+
+                const catName = goal.category || '기타';
+                const catBadge = `<div class="category-badge">${catName}</div>`;
+                const completedBadgeHtml = isCompleted ? `<div class="completed-badge">달성</div>` : '';
+
+                let dateStr = `${goal.startDate || '날짜미정'} 시작`;
+                if (isCompleted && goal.completedAt) {
+                    const dateObj = goal.completedAt.toDate ? goal.completedAt.toDate() : new Date(goal.completedAt.seconds * 1000);
+                    const year = dateObj.getFullYear();
+                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    dateStr = `${goal.startDate} ~ ${year}.${month}.${day} 달성`;
+                }
+
+                let timeBadgeHtml = '';
+                if (goal.useTimeTracker) {
+                    const relatedRecords = records.filter(r => r.goalId === goal.id);
+                    const totalMinutes = relatedRecords.reduce((sum, r) => sum + (parseInt(r.time) || 0), 0);
+
+                    if (totalMinutes > 0) {
+                        const h = Math.floor(totalMinutes / 60);
+                        const m = totalMinutes % 60;
+                        const timeStr = h > 0 ? `${h}시간 ${m}분` : `${m}분`;
+                        timeBadgeHtml = `<div class="total-time-badge"><span>⏱️</span> <span>Total ${timeStr}</span></div>`;
+                    }
+                }
+
+                div.innerHTML = `
                 ${catBadge}
                 ${completedBadgeHtml}
                 <div style="flex:1;" onclick="enterGoal('${goal.id}', '${goal.name}')">
@@ -1057,203 +1979,203 @@
                 ${timeBadgeHtml}
                 <div class="goal-date">${dateStr}</div>
                 `;
-            container.appendChild(div);
-        });
+                container.appendChild(div);
+            });
 
-        if(goalSortable) goalSortable.destroy();
-        goalSortable = Sortable.create(container, {
-            handle: '.drag-handle',
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            onEnd: function (evt) {
-                saveNewOrder(); // 순서 변경 후 DB 업데이트
+            if (goalSortable) goalSortable.destroy();
+            goalSortable = Sortable.create(container, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    saveNewOrder(); // 순서 변경 후 DB 업데이트
+                }
+            });
+        }
+
+        function saveNewOrder() {
+            const container = document.getElementById('goal-list-container');
+            const items = container.querySelectorAll('.card');
+            const batch = db.batch();
+            let hasUpdates = false;
+
+            items.forEach((item, index) => {
+                const id = item.getAttribute('data-id');
+                const newOrder = index + 1;
+                const goal = goals.find(g => g.id === id);
+                if (goal && goal.order !== newOrder) {
+                    goal.order = newOrder;
+                    const ref = db.collection('goals').doc(id);
+                    batch.update(ref, { order: newOrder });
+                    hasUpdates = true;
+                }
+            });
+
+            if (hasUpdates) {
+                batch.commit().then(() => {
+                    console.log("순서 업데이트 완료");
+                });
             }
-        });
-    }
+        }
 
-    function saveNewOrder() {
-        const container = document.getElementById('goal-list-container');
-        const items = container.querySelectorAll('.card');
-        const batch = db.batch();
-        let hasUpdates = false;
+        function saveRecord() {
+            const date = document.getElementById('record-date-input').value;
+            const diary = document.getElementById('record-diary-input').value;
+            const hourVal = document.getElementById('record-time-hour').value;
+            const minVal = document.getElementById('record-time-minute').value;
+            const totalMinutes = (parseInt(hourVal) || 0) * 60 + (parseInt(minVal) || 0);
+            const id = document.getElementById('record-id-input').value;
 
-        items.forEach((item, index) => {
-            const id = item.getAttribute('data-id');
-            const newOrder = index + 1; 
-            const goal = goals.find(g => g.id === id);
-            if (goal && goal.order !== newOrder) {
-                goal.order = newOrder;
-                const ref = db.collection('goals').doc(id);
-                batch.update(ref, { order: newOrder });
-                hasUpdates = true;
+            const checkedSubGoals = [];
+            document.querySelectorAll('.subgoal-checkbox:checked').forEach(cb => {
+                checkedSubGoals.push(cb.value);
+            });
+
+            if (!currentEmoji) return alert("오늘의 기분(이모지)을 선택해주세요.");
+
+            if (!id) {
+                const exist = records.find(r => r.goalId === currentGoalId && r.date === date);
+                if (exist) return alert("해당 날짜의 기록이 이미 존재합니다.");
             }
-        });
 
-        if (hasUpdates) {
-            batch.commit().then(() => {
-                console.log("순서 업데이트 완료");
-            });
-        }
-    }
+            const data = {
+                uid: user.uid,
+                goalId: currentGoalId,
+                date: date,
+                emoji: currentEmoji,
+                diary: diary,
+                completedSubGoals: checkedSubGoals,
+                time: totalMinutes
+            };
 
-    function saveRecord() {
-        const date = document.getElementById('record-date-input').value;
-        const diary = document.getElementById('record-diary-input').value;
-        const hourVal = document.getElementById('record-time-hour').value;
-        const minVal = document.getElementById('record-time-minute').value;
-        const totalMinutes = (parseInt(hourVal) || 0) * 60 + (parseInt(minVal) || 0);
-        const id = document.getElementById('record-id-input').value;
-
-        const checkedSubGoals = [];
-        document.querySelectorAll('.subgoal-checkbox:checked').forEach(cb => {
-            checkedSubGoals.push(cb.value);
-        });
-
-        if (!currentEmoji) return alert("오늘의 기분(이모지)을 선택해주세요.");
-
-        if (!id) {
-            const exist = records.find(r => r.goalId === currentGoalId && r.date === date);
-            if (exist) return alert("해당 날짜의 기록이 이미 존재합니다.");
+            if (id) {
+                db.collection('records').doc(id).update(data).then(() => {
+                    refreshCurrentView();
+                    closeModals();
+                });
+            } else {
+                db.collection('records').add(data).then(() => {
+                    refreshCurrentView();
+                    closeModals();
+                });
+            }
         }
 
-        const data = {
-            uid: user.uid,
-            goalId: currentGoalId,
-            date: date,
-            emoji: currentEmoji,
-            diary: diary,
-            completedSubGoals: checkedSubGoals,
-            time: totalMinutes 
-        };
+        function openRecordModal(id = null) {
+            document.getElementById('modal-record').style.display = 'flex';
+            const dateInput = document.getElementById('record-date-input');
+            const diaryInput = document.getElementById('record-diary-input');
+            const idInput = document.getElementById('record-id-input');
+            const checkArea = document.getElementById('record-subgoal-area');
+            const checkListDiv = document.getElementById('record-check-list');
+            const timeInputArea = document.getElementById('record-time-input-area');
 
-        if (id) {
-            db.collection('records').doc(id).update(data).then(() => {
-                refreshCurrentView();
-                closeModals();
-            });
-        } else {
-            db.collection('records').add(data).then(() => {
-                refreshCurrentView();
-                closeModals();
-            });
-        }
-    }
+            const hourInput = document.getElementById('record-time-hour');
+            const minInput = document.getElementById('record-time-minute');
 
-    function openRecordModal(id = null) {
-        document.getElementById('modal-record').style.display = 'flex';
-        const dateInput = document.getElementById('record-date-input');
-        const diaryInput = document.getElementById('record-diary-input');
-        const idInput = document.getElementById('record-id-input');
-        const checkArea = document.getElementById('record-subgoal-area');
-        const checkListDiv = document.getElementById('record-check-list');
-        const timeInputArea = document.getElementById('record-time-input-area'); 
-        
-        const hourInput = document.getElementById('record-time-hour');
-        const minInput = document.getElementById('record-time-minute');
+            checkListDiv.innerHTML = '';
+            selectEmoji('');
 
-        checkListDiv.innerHTML = '';
-        selectEmoji('');
-        
-        const curGoal = goals.find(g => g.id === currentGoalId);
-        if (curGoal && curGoal.useTimeTracker) {
-            timeInputArea.style.display = 'block';
-        } else {
-            timeInputArea.style.display = 'none';
-        }
-        
-        const mySubGoals = subGoalsMap[currentGoalId] || [];
-        mySubGoals.sort((a,b) => (a.order||0) - (b.order||0));
-        
-        if(mySubGoals.length > 0) {
-            checkArea.style.display = 'block';
-            mySubGoals.forEach(sg => {
-                const div = document.createElement('div');
-                div.className = 'check-item';
-                div.innerHTML = `
+            const curGoal = goals.find(g => g.id === currentGoalId);
+            if (curGoal && curGoal.useTimeTracker) {
+                timeInputArea.style.display = 'block';
+            } else {
+                timeInputArea.style.display = 'none';
+            }
+
+            const mySubGoals = subGoalsMap[currentGoalId] || [];
+            mySubGoals.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            if (mySubGoals.length > 0) {
+                checkArea.style.display = 'block';
+                mySubGoals.forEach(sg => {
+                    const div = document.createElement('div');
+                    div.className = 'check-item';
+                    div.innerHTML = `
                     <label style="display:flex; align-items:center; width:100%; cursor:pointer;">
                         <input type="checkbox" class="subgoal-checkbox" value="${sg.id}">
                         <span><b>•</b> ${sg.name}</span>
                     </label>
                 `;
-                checkListDiv.appendChild(div);
-            });
-        } else {
-            checkArea.style.display = 'none';
-        }
-
-        if (id) {
-            const rec = records.find(r => r.id === id);
-            dateInput.value = rec.date; dateInput.disabled = true;
-            diaryInput.value = rec.diary; idInput.value = rec.id;
-            
-            if (rec.time && rec.time > 0) {
-                hourInput.value = Math.floor(rec.time / 60);
-                minInput.value = rec.time % 60;
+                    checkListDiv.appendChild(div);
+                });
             } else {
-                hourInput.value = '';
-                minInput.value = '';
+                checkArea.style.display = 'none';
             }
 
-            selectEmoji(rec.emoji);
-            
-            if(rec.completedSubGoals) {
-                rec.completedSubGoals.forEach(subId => {
-                    const cb = document.querySelector(`.subgoal-checkbox[value="${subId}"]`);
-                    if(cb) cb.checked = true;
-                });
+            if (id) {
+                const rec = records.find(r => r.id === id);
+                dateInput.value = rec.date; dateInput.disabled = true;
+                diaryInput.value = rec.diary; idInput.value = rec.id;
+
+                if (rec.time && rec.time > 0) {
+                    hourInput.value = Math.floor(rec.time / 60);
+                    minInput.value = rec.time % 60;
+                } else {
+                    hourInput.value = '';
+                    minInput.value = '';
+                }
+
+                selectEmoji(rec.emoji);
+
+                if (rec.completedSubGoals) {
+                    rec.completedSubGoals.forEach(subId => {
+                        const cb = document.querySelector(`.subgoal-checkbox[value="${subId}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+            } else {
+                dateInput.valueAsDate = new Date(); dateInput.disabled = false;
+                diaryInput.value = ''; idInput.value = '';
+                hourInput.value = ''; minInput.value = '';
             }
-        } else {
-            dateInput.valueAsDate = new Date(); dateInput.disabled = false;
-            diaryInput.value = ''; idInput.value = '';
-            hourInput.value = ''; minInput.value = ''; 
         }
-    }
 
-    function renderRecordList() {
-        const container = document.getElementById('record-list-container');
-        container.innerHTML = '';
-        let myRecords = records.filter(r => r.goalId === currentGoalId);
-        myRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const mySubGoals = subGoalsMap[currentGoalId] || [];
+        function renderRecordList() {
+            const container = document.getElementById('record-list-container');
+            container.innerHTML = '';
+            let myRecords = records.filter(r => r.goalId === currentGoalId);
+            myRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const mySubGoals = subGoalsMap[currentGoalId] || [];
 
-        if (myRecords.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:#999; margin-top:80px; font-size:0.9rem;">아직 기록이 없습니다.<br>오늘의 결과를 기록해보세요!</p>';
-            return;
-        }
-        myRecords.forEach(rec => {
-            let emoji = rec.emoji === 'smile' ? '😄' : rec.emoji === 'neutral' ? '😐' : '😭';
-            let styleClass = rec.emoji === 'smile' ? 'style-smile' : rec.emoji === 'neutral' ? 'style-neutral' : 'style-sad';
-            
-            let doneTagsHtml = '';
-            if(rec.completedSubGoals && rec.completedSubGoals.length > 0) {
-                doneTagsHtml = '<div class="subgoal-tags">';
-                let doneSubs = [];
-                rec.completedSubGoals.forEach(doneId => {
-                    const foundSub = mySubGoals.find(sg => sg.id === doneId);
-                    if(foundSub) doneSubs.push(foundSub);
-                });
-                doneSubs.sort((a,b) => (a.order||0) - (b.order||0));
-
-                doneSubs.forEach(foundSub => {
-                    doneTagsHtml += `<span class="subgoal-tag">✔ ${foundSub.name}</span>`;
-                });
-                doneTagsHtml += '</div>';
+            if (myRecords.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#999; margin-top:80px; font-size:0.9rem;">아직 기록이 없습니다.<br>오늘의 결과를 기록해보세요!</p>';
+                return;
             }
+            myRecords.forEach(rec => {
+                let emoji = rec.emoji === 'smile' ? '😄' : rec.emoji === 'neutral' ? '😐' : '😭';
+                let styleClass = rec.emoji === 'smile' ? 'style-smile' : rec.emoji === 'neutral' ? 'style-neutral' : 'style-sad';
 
-            let timeHtml = '';
-            if (rec.time && rec.time > 0) {
-                let h = Math.floor(rec.time / 60);
-                let m = rec.time % 60;
-                let timeText = '';
-                if(h > 0) timeText += `${h}시간 `;
-                if(m > 0) timeText += `${m}분`;
-                timeHtml = `<span class="record-time-badge">⏱️ ${timeText.trim()}</span>`;
-            }
+                let doneTagsHtml = '';
+                if (rec.completedSubGoals && rec.completedSubGoals.length > 0) {
+                    doneTagsHtml = '<div class="subgoal-tags">';
+                    let doneSubs = [];
+                    rec.completedSubGoals.forEach(doneId => {
+                        const foundSub = mySubGoals.find(sg => sg.id === doneId);
+                        if (foundSub) doneSubs.push(foundSub);
+                    });
+                    doneSubs.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-            const div = document.createElement('div');
-            div.className = `record-card ${styleClass}`; 
-            
-            div.innerHTML = `
+                    doneSubs.forEach(foundSub => {
+                        doneTagsHtml += `<span class="subgoal-tag">✔ ${foundSub.name}</span>`;
+                    });
+                    doneTagsHtml += '</div>';
+                }
+
+                let timeHtml = '';
+                if (rec.time && rec.time > 0) {
+                    let h = Math.floor(rec.time / 60);
+                    let m = rec.time % 60;
+                    let timeText = '';
+                    if (h > 0) timeText += `${h}시간 `;
+                    if (m > 0) timeText += `${m}분`;
+                    timeHtml = `<span class="record-time-badge">⏱️ ${timeText.trim()}</span>`;
+                }
+
+                const div = document.createElement('div');
+                div.className = `record-card ${styleClass}`;
+
+                div.innerHTML = `
                 <div class="record-header">
                     <div>
                         <span>${rec.date}</span>
@@ -1272,134 +2194,134 @@
                 </div>
                 ${doneTagsHtml} 
                 `;
-            container.appendChild(div);
-        });
-    }
-
-    function deleteRecord(id) {
-        if(confirm("기록을 삭제하시겠습니까?")) {
-            db.collection('records').doc(id).delete().then(() => refreshCurrentView());
+                container.appendChild(div);
+            });
         }
-    }
 
-    function refreshCurrentView() {
-        db.collection('records').where("uid", "==", user.uid).get().then((querySnapshot) => {
-            records = [];
-            querySnapshot.forEach((doc) => records.push({ id: doc.id, ...doc.data() }));
-            
-            if(document.getElementById('view-list').style.display === 'block') renderRecordList();
-            else if(document.getElementById('view-calendar').style.display === 'block') renderCalendar();
-            
-            if(document.getElementById('screen-dashboard').style.display === 'block') renderDashboard();
-
-            renderGoalList();
-        });
-    }
-
-    function showScreen(screenName) {
-        if (screenName === 'goal') {
-            document.getElementById('screen-goal-list').style.display = 'block';
-            document.getElementById('screen-record-list').style.display = 'none';
-            document.getElementById('screen-dashboard').style.display = 'none';
-            renderGoalList();
-        } else if (screenName === 'dashboard') {
-            document.getElementById('screen-goal-list').style.display = 'none';
-            document.getElementById('screen-record-list').style.display = 'none';
-            document.getElementById('screen-dashboard').style.display = 'block';
-            renderDashboard();
-        } else {
-            document.getElementById('screen-goal-list').style.display = 'none';
-            document.getElementById('screen-record-list').style.display = 'block';
-            document.getElementById('screen-dashboard').style.display = 'none';
-            switchTab('list');
-        }
-    }
-    
-    function switchTab(tabName) {
-        if (tabName === 'list') {
-            document.getElementById('view-list').style.display = 'block';
-            document.getElementById('view-calendar').style.display = 'none';
-            document.getElementById('tab-list-btn').classList.add('active');
-            document.getElementById('tab-cal-btn').classList.remove('active');
-            renderRecordList();
-        } else {
-            document.getElementById('view-list').style.display = 'none';
-            document.getElementById('view-calendar').style.display = 'block';
-            document.getElementById('tab-list-btn').classList.remove('active');
-            document.getElementById('tab-cal-btn').classList.add('active');
-            renderCalendar();
-        }
-    }
-
-    function enterGoal(id, name) {
-        currentGoalId = id;
-        document.getElementById('record-title-text').innerText = name;
-        showScreen('record');
-    }
-    function editGoal(id) { openGoalModal(id); }
-    function editRecord(id) { openRecordModal(id); }
-    
-    function renderCalendar() {
-        const container = document.getElementById('calendar-body');
-        container.innerHTML = '';
-        document.getElementById('cal-year-month').innerText = `${calYear}년 ${calMonth + 1}월`;
-        const firstDay = new Date(calYear, calMonth, 1).getDay();
-        const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
-        
-        for (let i = 0; i < firstDay; i++) container.innerHTML += `<div class="cal-day"></div>`;
-        
-        for (let day = 1; day <= lastDate; day++) {
-            const monthStr = (calMonth + 1).toString().padStart(2, '0');
-            const dayStr = day.toString().padStart(2, '0');
-            const dateStr = `${calYear}-${monthStr}-${dayStr}`;
-            const record = records.find(r => r.goalId === currentGoalId && r.date === dateStr);
-            let emojiHtml = record ? `<div class="cal-emoji">${record.emoji === 'smile' ? '😄' : record.emoji === 'neutral' ? '😐' : '😭'}</div>` : '';
-            
-            let timeHtml = '';
-            if (record && record.time > 0) {
-                let h = Math.floor(record.time / 60);
-                let m = record.time % 60;
-                let timeText = '';
-                if(h > 0) timeText += `${h}h `;
-                if(m > 0) timeText += `${m}m`;
-                timeHtml = `<div class="cal-time">${timeText.trim()}</div>`;
+        function deleteRecord(id) {
+            if (confirm("기록을 삭제하시겠습니까?")) {
+                db.collection('records').doc(id).delete().then(() => refreshCurrentView());
             }
-
-            const today = new Date();
-            const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === day;
-            const bgStyle = isToday ? 'background:#000; color:white; border-radius:50%; width:20px; height:20px; display:flex; justify-content:center; align-items:center;' : '';
-            container.innerHTML += `<div class="cal-day" onclick="handleCalendarClick('${dateStr}')"><span class="cal-date-num" style="${bgStyle}">${day}</span>${emojiHtml}${timeHtml}</div>`;
         }
-        
-        const summaryContainer = document.getElementById('calendar-summary');
-        const curGoal = goals.find(g => g.id === currentGoalId);
-        
-        if (curGoal) {
-            let dateRangeStr = `${curGoal.startDate || '시작일 미정'} ~ 진행 중`;
-            if (curGoal.completedAt) {
-                const dateObj = curGoal.completedAt.toDate ? curGoal.completedAt.toDate() : new Date(curGoal.completedAt.seconds * 1000);
-                const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                dateRangeStr = `${curGoal.startDate} ~ ${year}.${month}.${day} (달성)`;
-            }
 
-            let totalTimeStr = '-';
-            if (curGoal.useTimeTracker) {
-                const relatedRecords = records.filter(r => r.goalId === curGoal.id);
-                const totalMinutes = relatedRecords.reduce((sum, r) => sum + (parseInt(r.time) || 0), 0);
-                if (totalMinutes > 0) {
-                    const h = Math.floor(totalMinutes / 60);
-                    const m = totalMinutes % 60;
-                    totalTimeStr = h > 0 ? `${h}시간 ${m}분` : `${m}분`;
-                } else {
-                    totalTimeStr = '0분';
-                }
+        function refreshCurrentView() {
+            db.collection('records').where("uid", "==", user.uid).get().then((querySnapshot) => {
+                records = [];
+                querySnapshot.forEach((doc) => records.push({ id: doc.id, ...doc.data() }));
+
+                if (document.getElementById('view-list').style.display === 'block') renderRecordList();
+                else if (document.getElementById('view-calendar').style.display === 'block') renderCalendar();
+
+                if (document.getElementById('screen-dashboard').style.display === 'block') renderDashboard();
+
+                renderGoalList();
+            });
+        }
+
+        function showScreen(screenName) {
+            if (screenName === 'goal') {
+                document.getElementById('screen-goal-list').style.display = 'block';
+                document.getElementById('screen-record-list').style.display = 'none';
+                document.getElementById('screen-dashboard').style.display = 'none';
+                renderGoalList();
+            } else if (screenName === 'dashboard') {
+                document.getElementById('screen-goal-list').style.display = 'none';
+                document.getElementById('screen-record-list').style.display = 'none';
+                document.getElementById('screen-dashboard').style.display = 'block';
+                renderDashboard();
             } else {
-                totalTimeStr = '시간 기록 미사용';
+                document.getElementById('screen-goal-list').style.display = 'none';
+                document.getElementById('screen-record-list').style.display = 'block';
+                document.getElementById('screen-dashboard').style.display = 'none';
+                switchTab('list');
+            }
+        }
+
+        function switchTab(tabName) {
+            if (tabName === 'list') {
+                document.getElementById('view-list').style.display = 'block';
+                document.getElementById('view-calendar').style.display = 'none';
+                document.getElementById('tab-list-btn').classList.add('active');
+                document.getElementById('tab-cal-btn').classList.remove('active');
+                renderRecordList();
+            } else {
+                document.getElementById('view-list').style.display = 'none';
+                document.getElementById('view-calendar').style.display = 'block';
+                document.getElementById('tab-list-btn').classList.remove('active');
+                document.getElementById('tab-cal-btn').classList.add('active');
+                renderCalendar();
+            }
+        }
+
+        function enterGoal(id, name) {
+            currentGoalId = id;
+            document.getElementById('record-title-text').innerText = name;
+            showScreen('record');
+        }
+        function editGoal(id) { openGoalModal(id); }
+        function editRecord(id) { openRecordModal(id); }
+
+        function renderCalendar() {
+            const container = document.getElementById('calendar-body');
+            container.innerHTML = '';
+            document.getElementById('cal-year-month').innerText = `${calYear}년 ${calMonth + 1}월`;
+            const firstDay = new Date(calYear, calMonth, 1).getDay();
+            const lastDate = new Date(calYear, calMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) container.innerHTML += `<div class="cal-day"></div>`;
+
+            for (let day = 1; day <= lastDate; day++) {
+                const monthStr = (calMonth + 1).toString().padStart(2, '0');
+                const dayStr = day.toString().padStart(2, '0');
+                const dateStr = `${calYear}-${monthStr}-${dayStr}`;
+                const record = records.find(r => r.goalId === currentGoalId && r.date === dateStr);
+                let emojiHtml = record ? `<div class="cal-emoji">${record.emoji === 'smile' ? '😄' : record.emoji === 'neutral' ? '😐' : '😭'}</div>` : '';
+
+                let timeHtml = '';
+                if (record && record.time > 0) {
+                    let h = Math.floor(record.time / 60);
+                    let m = record.time % 60;
+                    let timeText = '';
+                    if (h > 0) timeText += `${h}h `;
+                    if (m > 0) timeText += `${m}m`;
+                    timeHtml = `<div class="cal-time">${timeText.trim()}</div>`;
+                }
+
+                const today = new Date();
+                const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === day;
+                const bgStyle = isToday ? 'background:#000; color:white; border-radius:50%; width:20px; height:20px; display:flex; justify-content:center; align-items:center;' : '';
+                container.innerHTML += `<div class="cal-day" onclick="handleCalendarClick('${dateStr}')"><span class="cal-date-num" style="${bgStyle}">${day}</span>${emojiHtml}${timeHtml}</div>`;
             }
 
-            summaryContainer.innerHTML = `
+            const summaryContainer = document.getElementById('calendar-summary');
+            const curGoal = goals.find(g => g.id === currentGoalId);
+
+            if (curGoal) {
+                let dateRangeStr = `${curGoal.startDate || '시작일 미정'} ~ 진행 중`;
+                if (curGoal.completedAt) {
+                    const dateObj = curGoal.completedAt.toDate ? curGoal.completedAt.toDate() : new Date(curGoal.completedAt.seconds * 1000);
+                    const year = dateObj.getFullYear();
+                    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const day = String(dateObj.getDate()).padStart(2, '0');
+                    dateRangeStr = `${curGoal.startDate} ~ ${year}.${month}.${day} (달성)`;
+                }
+
+                let totalTimeStr = '-';
+                if (curGoal.useTimeTracker) {
+                    const relatedRecords = records.filter(r => r.goalId === curGoal.id);
+                    const totalMinutes = relatedRecords.reduce((sum, r) => sum + (parseInt(r.time) || 0), 0);
+                    if (totalMinutes > 0) {
+                        const h = Math.floor(totalMinutes / 60);
+                        const m = totalMinutes % 60;
+                        totalTimeStr = h > 0 ? `${h}시간 ${m}분` : `${m}분`;
+                    } else {
+                        totalTimeStr = '0분';
+                    }
+                } else {
+                    totalTimeStr = '시간 기록 미사용';
+                }
+
+                summaryContainer.innerHTML = `
                 <div class="summary-item">
                     <span class="summary-label">기간</span>
                     <span class="summary-value date">${dateRangeStr}</span>
@@ -1409,77 +2331,77 @@
                     <span class="summary-value time">${totalTimeStr}</span>
                 </div>
             `;
+            }
         }
-    }
-    
-    function handleCalendarClick(dateStr) {
-        const rec = records.find(r => r.goalId === currentGoalId && r.date === dateStr);
-        if(rec) {
-            openRecordModal(rec.id);
-        } else {
-            openRecordModal(null);
-            document.getElementById('record-date-input').value = dateStr;
+
+        function handleCalendarClick(dateStr) {
+            const rec = records.find(r => r.goalId === currentGoalId && r.date === dateStr);
+            if (rec) {
+                openRecordModal(rec.id);
+            } else {
+                openRecordModal(null);
+                document.getElementById('record-date-input').value = dateStr;
+            }
         }
-    }
 
-    function renderDashboard() {
-        const table = document.getElementById('dash-table');
-        table.innerHTML = '';
-        
-        document.getElementById('dash-year-month').innerText = `${dashYear}년 ${dashMonth + 1}월`;
+        function renderDashboard() {
+            const table = document.getElementById('dash-table');
+            table.innerHTML = '';
 
-        const lastDate = new Date(dashYear, dashMonth + 1, 0).getDate();
-        let headerHtml = `<thead><tr><th class="sticky-col" style="z-index:10;">목표</th>`;
-        for (let d = 1; d <= lastDate; d++) {
-            const dayOfWeek = new Date(dashYear, dashMonth, d).getDay();
-            let color = '#555';
-            if(dayOfWeek === 0) color = '#ef5350'; 
-            if(dayOfWeek === 6) color = '#5c6bc0'; 
-            headerHtml += `<th style="color:${color}">${d}</th>`;
-        }
-        headerHtml += `</tr></thead>`;
-        table.innerHTML += headerHtml;
+            document.getElementById('dash-year-month').innerText = `${dashYear}년 ${dashMonth + 1}월`;
 
-        let bodyHtml = `<tbody>`;
-        
-        const sortedGoals = [...goals].sort((a,b) => {
-             const aDone = !!a.completedAt;
-             const bDone = !!b.completedAt;
-             if (aDone !== bDone) return aDone ? 1 : -1; 
-             return (a.order||0) - (b.order||0);
-        });
-
-        sortedGoals.forEach(goal => {
-            let monthTotalMin = 0;
-            let tds = '';
+            const lastDate = new Date(dashYear, dashMonth + 1, 0).getDate();
+            let headerHtml = `<thead><tr><th class="sticky-col" style="z-index:10;">목표</th>`;
             for (let d = 1; d <= lastDate; d++) {
-                const monthStr = (dashMonth + 1).toString().padStart(2, '0');
-                const dayStr = d.toString().padStart(2, '0');
-                const dateStr = `${dashYear}-${monthStr}-${dayStr}`;
-
-                const rec = records.find(r => r.goalId === goal.id && r.date === dateStr);
-                
-                let cellContent = '';
-                if(rec) {
-                    const emoji = rec.emoji === 'smile' ? '😄' : rec.emoji === 'neutral' ? '😐' : '😭';
-                    cellContent = `<span class="dash-emoji">${emoji}</span>`;
-                    monthTotalMin += (parseInt(rec.time) || 0);
-                }
-                tds += `<td class="dash-clickable-cell" onclick="handleDashClick('${goal.id}', '${dateStr}')">${cellContent}</td>`;
+                const dayOfWeek = new Date(dashYear, dashMonth, d).getDay();
+                let color = '#555';
+                if (dayOfWeek === 0) color = '#ef5350';
+                if (dayOfWeek === 6) color = '#5c6bc0';
+                headerHtml += `<th style="color:${color}">${d}</th>`;
             }
+            headerHtml += `</tr></thead>`;
+            table.innerHTML += headerHtml;
 
-            let timeText = '';
-            if(goal.useTimeTracker) {
-                if(monthTotalMin > 0) {
-                    const h = Math.floor(monthTotalMin / 60);
-                    const m = monthTotalMin % 60;
-                    timeText = h > 0 ? `${h}h ${m}m` : `${m}m`;
-                } else {
-                    timeText = '0m';
+            let bodyHtml = `<tbody>`;
+
+            const sortedGoals = [...goals].sort((a, b) => {
+                const aDone = !!a.completedAt;
+                const bDone = !!b.completedAt;
+                if (aDone !== bDone) return aDone ? 1 : -1;
+                return (a.order || 0) - (b.order || 0);
+            });
+
+            sortedGoals.forEach(goal => {
+                let monthTotalMin = 0;
+                let tds = '';
+                for (let d = 1; d <= lastDate; d++) {
+                    const monthStr = (dashMonth + 1).toString().padStart(2, '0');
+                    const dayStr = d.toString().padStart(2, '0');
+                    const dateStr = `${dashYear}-${monthStr}-${dayStr}`;
+
+                    const rec = records.find(r => r.goalId === goal.id && r.date === dateStr);
+
+                    let cellContent = '';
+                    if (rec) {
+                        const emoji = rec.emoji === 'smile' ? '😄' : rec.emoji === 'neutral' ? '😐' : '😭';
+                        cellContent = `<span class="dash-emoji">${emoji}</span>`;
+                        monthTotalMin += (parseInt(rec.time) || 0);
+                    }
+                    tds += `<td class="dash-clickable-cell" onclick="handleDashClick('${goal.id}', '${dateStr}')">${cellContent}</td>`;
                 }
-            }
 
-            bodyHtml += `
+                let timeText = '';
+                if (goal.useTimeTracker) {
+                    if (monthTotalMin > 0) {
+                        const h = Math.floor(monthTotalMin / 60);
+                        const m = monthTotalMin % 60;
+                        timeText = h > 0 ? `${h}h ${m}m` : `${m}m`;
+                    } else {
+                        timeText = '0m';
+                    }
+                }
+
+                bodyHtml += `
                 <tr>
                     <td class="sticky-col" onclick="enterGoal('${goal.id}', '${goal.name}')" title="상세보기">
                         <span class="dash-goal-name">${goal.name}</span>
@@ -1488,35 +2410,36 @@
                     ${tds}
                 </tr>
             `;
-        });
-        bodyHtml += `</tbody>`;
-        table.innerHTML += bodyHtml;
-    }
-
-    function handleDashClick(goalId, dateStr) {
-        currentGoalId = goalId; 
-        const rec = records.find(r => r.goalId === goalId && r.date === dateStr);
-        if(rec) {
-            openRecordModal(rec.id);
-        } else {
-            openRecordModal(null);
-            document.getElementById('record-date-input').value = dateStr;
+            });
+            bodyHtml += `</tbody>`;
+            table.innerHTML += bodyHtml;
         }
-    }
 
-    function changeDashMonth(diff) {
-        dashMonth += diff;
-        if (dashMonth > 11) { dashMonth = 0; dashYear++; } else if (dashMonth < 0) { dashMonth = 11; dashYear--; }
-        renderDashboard();
-    }
+        function handleDashClick(goalId, dateStr) {
+            currentGoalId = goalId;
+            const rec = records.find(r => r.goalId === goalId && r.date === dateStr);
+            if (rec) {
+                openRecordModal(rec.id);
+            } else {
+                openRecordModal(null);
+                document.getElementById('record-date-input').value = dateStr;
+            }
+        }
 
-    function changeMonth(diff) {
-        calMonth += diff;
-        if (calMonth > 11) { calMonth = 0; calYear++; } else if (calMonth < 0) { calMonth = 11; calYear--; }
-        renderCalendar();
-    }
-    function selectEmoji(mood) { currentEmoji = mood; ['smile', 'neutral', 'sad'].forEach(m => { document.getElementById('opt-' + m).classList.toggle('selected', m === mood); }); }
-    function closeModals() { document.getElementById('modal-goal').style.display = 'none'; document.getElementById('modal-record').style.display = 'none'; }
-</script>
+        function changeDashMonth(diff) {
+            dashMonth += diff;
+            if (dashMonth > 11) { dashMonth = 0; dashYear++; } else if (dashMonth < 0) { dashMonth = 11; dashYear--; }
+            renderDashboard();
+        }
+
+        function changeMonth(diff) {
+            calMonth += diff;
+            if (calMonth > 11) { calMonth = 0; calYear++; } else if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderCalendar();
+        }
+        function selectEmoji(mood) { currentEmoji = mood;['smile', 'neutral', 'sad'].forEach(m => { document.getElementById('opt-' + m).classList.toggle('selected', m === mood); }); }
+        function closeModals() { document.getElementById('modal-goal').style.display = 'none'; document.getElementById('modal-record').style.display = 'none'; }
+    </script>
 </body>
+
 </html>
